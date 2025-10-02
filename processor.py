@@ -2,6 +2,7 @@ import kagglehub
 import os
 
 # Download latest version
+_ = '''
 path = kagglehub.dataset_download("olistbr/brazilian-ecommerce")
 
 print("Path to dataset files:", path)
@@ -18,3 +19,47 @@ for filename in os.listdir(path):
     file = os.path.join(path, filename)
     df_name = filename.replace('.csv', '')  # e.g., olist_customers_dataset
     dfs[df_name] = pd.read_csv(file)
+'''
+
+
+
+
+from dash import Dash, html, dcc, callback, Output, Input, State
+import plotly.express as px
+import pandas as pd
+
+df = pd.read_csv('https://raw.githubusercontent.com/plotly/datasets/master/gapminder_unfiltered.csv')
+
+app = Dash()
+
+# Requires Dash 2.17.0 or later
+app.layout = html.Div([
+    # Sidebar
+    html.Div(
+        [
+            html.H2("SideBar"),
+            html.Hr(),
+            dcc.Link("Page 1", href="/page-1"),
+            html.Br(),
+            dcc.Link("Page 2", href="/page-2"),
+        ],
+        style={
+            "position": "absolute",
+            "top": 0,
+            "left": 0,
+            "bottom": 0,
+            "width": "320px",
+            "padding": "20px",
+            "background-color": "#f8f9fa",
+        }, #
+    ),
+
+    # Page content
+    html.Div(
+        id="page-content",
+        #style={"margin-left": "220px", "padding": "20px"}
+    )
+])
+
+if __name__ == '__main__':
+    app.run(debug=True)
