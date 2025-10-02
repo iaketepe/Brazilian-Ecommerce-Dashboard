@@ -37,12 +37,20 @@ app.layout = html.Div([
     # Sidebar
     html.Div(
         [
-            html.H2("SideBar"),
+            html.Button("<<",
+                        id="sidebar-button",
+                        style={
+                            "position": "absolute",
+                            "right": 20,
+                        }),
+            html.H2("Side Bar"),
             html.Hr(),
-            dcc.Link("Page 1", href="/page-1"),
+            html.H3("Acts"),
+            dcc.Link("Act 1", href="/page-1"),
             html.Br(),
-            dcc.Link("Page 2", href="/page-2"),
+            dcc.Link("Act 2", href="/page-2"),
         ],
+        id="sidebar",
         style={
             "position": "absolute",
             "top": 0,
@@ -51,7 +59,11 @@ app.layout = html.Div([
             "width": "320px",
             "padding": "20px",
             "background-color": "#f8f9fa",
-        }, #
+            "transition": "transform 0.3s",
+            "transform": "translateX(-100%)",  # hidden
+            "zIndex": 1000,
+            "overflow": "hidden"
+        }, # #000000
     ),
 
     # Page content
@@ -60,6 +72,23 @@ app.layout = html.Div([
         #style={"margin-left": "220px", "padding": "20px"}
     )
 ])
+
+@app.callback(
+    Output("sidebar","style"),
+    Input("sidebar-button", "n_clicks"),
+    State("sidebar", "style")
+)
+def toggle_sidebar(n_clicks, style):
+    if not style:
+        style = {}
+    style = style.copy()
+
+    # toggle left between hidden and visible
+    style["transform"] = "translateX(0)" if style.get("transform") == "translateX(-80%)" else "translateX(-80%)"
+
+    return style
+
+
 
 if __name__ == '__main__':
     app.run(debug=True)
