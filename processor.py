@@ -43,12 +43,15 @@ app.layout = html.Div([
                             "position": "absolute",
                             "right": 20,
                         }),
-            html.H2("Side Bar"),
-            html.Hr(),
-            html.H3("Acts"),
-            dcc.Link("Act 1", href="/page-1"),
-            html.Br(),
-            dcc.Link("Act 2", href="/page-2"),
+            html.Div([
+                html.H2("Side Bar"),
+                html.Hr(),
+                html.H3("Acts"),
+                dcc.Link("Act 1", href="/page-1"),
+                html.Br(),
+                dcc.Link("Act 2", href="/page-2"),
+            ],
+            id="sidebar-elements"),
         ],
         id="sidebar",
         style={
@@ -75,18 +78,31 @@ app.layout = html.Div([
 
 @app.callback(
     Output("sidebar","style"),
+    Output("sidebar-elements","style"),
     Input("sidebar-button", "n_clicks"),
-    State("sidebar", "style")
+    State("sidebar", "style"),
+    State('sidebar-elements', 'style')
 )
-def toggle_sidebar(n_clicks, style):
-    if not style:
-        style = {}
-    style = style.copy()
+def toggle_sidebar(n_clicks, sidebar_style, sidebar_elements_style):
+    if not sidebar_style:
+        sidebar_style = {}
+    sidebar_style = sidebar_style.copy()
+
+    if not sidebar_elements_style:
+        sidebar_elements_style = {}
+    sidebar_elements_style = sidebar_elements_style.copy()
 
     # toggle left between hidden and visible
-    style["transform"] = "translateX(0)" if style.get("transform") == "translateX(-80%)" else "translateX(-80%)"
+    if sidebar_style.get("transform") == "translateX(-80%)":
+        sidebar_style["transform"] = "translateX(0)"
+        sidebar_elements_style["display"] = "block"
+    else:
+        sidebar_style["transform"] = "translateX(-80%)"
+        sidebar_elements_style["display"] = "none"
 
-    return style
+    #sidebar_style["transform"] = "translateX(0)" if sidebar_style.get("transform") == "translateX(-80%)" else "translateX(-80%)"
+
+    return sidebar_style, sidebar_elements_style
 
 
 
