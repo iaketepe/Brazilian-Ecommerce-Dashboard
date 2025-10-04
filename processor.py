@@ -35,6 +35,14 @@ app = Dash()
 # Requires Dash 2.17.0 or later
 app.layout = html.Div([
     # Sidebar
+    html.Button(">>",
+                id="sidebar-under-button",
+                style={
+                    "position": "absolute",
+                    "top": 20,
+                    "left": 20,
+                    "display": "block"
+                }),
     html.Div(
         [
             html.Button("<<",
@@ -63,9 +71,9 @@ app.layout = html.Div([
             "padding": "20px",
             "background-color": "#f8f9fa",
             "transition": "transform 0.3s",
-            "transform": "translateX(-100%)",  # hidden
             "zIndex": 1000,
-            "overflow": "hidden"
+            "overflow": "hidden",
+            "display": "none"
         }, # #000000
     ),
 
@@ -78,31 +86,24 @@ app.layout = html.Div([
 
 @app.callback(
     Output("sidebar","style"),
-    Output("sidebar-elements","style"),
     Input("sidebar-button", "n_clicks"),
+    Input("sidebar-under-button", "n_clicks"),
     State("sidebar", "style"),
-    State('sidebar-elements', 'style')
 )
-def toggle_sidebar(n_clicks, sidebar_style, sidebar_elements_style):
+def toggle_sidebar(n_clicks, n_clicks2, sidebar_style):
     if not sidebar_style:
         sidebar_style = {}
     sidebar_style = sidebar_style.copy()
 
-    if not sidebar_elements_style:
-        sidebar_elements_style = {}
-    sidebar_elements_style = sidebar_elements_style.copy()
+    sidebar_style["display"] = "block"
 
     # toggle left between hidden and visible
-    if sidebar_style.get("transform") == "translateX(-80%)":
+    if sidebar_style.get("transform") == "translateX(-100%)":
         sidebar_style["transform"] = "translateX(0)"
-        sidebar_elements_style["display"] = "block"
     else:
-        sidebar_style["transform"] = "translateX(-80%)"
-        sidebar_elements_style["display"] = "none"
+        sidebar_style["transform"] = "translateX(-100%)"
 
-    #sidebar_style["transform"] = "translateX(0)" if sidebar_style.get("transform") == "translateX(-80%)" else "translateX(-80%)"
-
-    return sidebar_style, sidebar_elements_style
+    return sidebar_style
 
 
 
