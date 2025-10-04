@@ -1,4 +1,3 @@
 kagglehub
 pandas
-streamlit
 dash
