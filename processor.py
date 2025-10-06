@@ -32,6 +32,8 @@ df = pd.read_csv('https://raw.githubusercontent.com/plotly/datasets/master/gapmi
 
 app = Dash()
 
+#"Source Sans", sans-serif background-color: rgb(14, 17, 23);
+
 # Requires Dash 2.17.0 or later
 app.layout = html.Div([
     # Sidebar
@@ -78,11 +80,17 @@ app.layout = html.Div([
     ),
 
     # Page content
-    html.Div(
+    html.Div([
+            html.H1("Brazilian Ecommerce Dashboard",
+                    style={
+                        "text-align": "center",
+                    }),
+        ],
         id="page-content",
         #style={"margin-left": "220px", "padding": "20px"}
     )
 ])
+
 
 @app.callback(
     Output("sidebar","style"),
