@@ -4,8 +4,6 @@ import plotly.graph_objects as go
 import pandas as pd
 import processor
 
-df = pd.read_csv('https://raw.githubusercontent.com/plotly/datasets/master/gapminder_unfiltered.csv')
-
 app = Dash()
 
 #"Source Sans", sans-serif background-color: rgb(14, 17, 23);
@@ -62,8 +60,11 @@ app.layout = html.Div([
                         "text-align": "center",
                     }
             ),
-            html.Div(
-                [f"Total Orders: {processor.review_score_avg}"],
+            html.Div([
+                dcc.Interval(id='a1-review_intervals', interval=5000, n_intervals=0),
+                dcc.Graph(id='a1-review_score'),
+
+            ],
                 style={
                     "border": "1px solid black",
                     "display" : "flex",
@@ -106,11 +107,14 @@ def toggle_sidebar(n_clicks, n_clicks2, sidebar_style):
     return sidebar_style
 
 
-# plotly test
-def review_score(review_score_avg):
+@app.callback(
+    Output('a1-review_score', 'figure'),
+    Input('a1-review_intervals','n_intervals')
+)
+def review_score(_):
     fig = go.Figure(go.Indicator(
         mode="number+gauge+delta",
-        value=review_score_avg,
+        value=processor.review_score_avg,
         title={"text": "Average Review Score"},
         gauge={
             "axis": {"range": [0, 5]},
@@ -118,7 +122,7 @@ def review_score(review_score_avg):
         }
     ))
 
-    fig.show()
+    return fig
 
 
 
