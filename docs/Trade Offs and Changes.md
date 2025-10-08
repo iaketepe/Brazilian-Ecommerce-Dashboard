@@ -16,7 +16,7 @@
       - Pipeline sends analysis to DB
       - 'App' requests DB info from Pipeline service, rendering data
 
-Result: I chose designing a service-based application based on option B, since I believe that would be closer to real world workflows.
+Result: I chose designing a service-based application based on option A. After doing some research, I realized that option A was better because it increases the amount of abstraction between them. This abstraction is, I believe makes option A closer to real world workflows.
 
 
 ## Choosing Technologies
@@ -35,5 +35,6 @@ Finally, I have designing my dashboard as a web app. I had two options:
 Choosing between using Streamlit and Dash was one of toughest choices I had to make for this project. In fact, I was originally planning on using streamlit since my architecture design makes my web app need to render my analysis instead of processing it. 
 
 So there wasn't much difference between the two. However, as I was developing, I realized that streamlit's more limited web design tools actually made it difficult to design. So I decided switching to Dash would be better long term.
+
 
 
