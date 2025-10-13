@@ -1,8 +1,6 @@
-from dash import Dash, html, dcc, callback, Output, Input, State
-import plotly.express as px
+from dash import Dash, html, dcc, Output, Input, State
 import plotly.graph_objects as go
-import pandas as pd
-import processor
+from pipeline.running import processor
 
 app = Dash()
 
@@ -63,6 +61,10 @@ app.layout = html.Div([
             html.Div([
                 dcc.Interval(id='a1-review_intervals', interval=5000, n_intervals=0),
                 dcc.Graph(id='a1-review_score'),
+                html.Div([
+                    html.Span("★", style={'color': 'lightgray'}),
+                    html.Span("★", style={'color': 'gold', 'width': '43%', 'overflow': 'hidden', 'display': 'inline-block', "font-size" : 200}),
+                ])
 
             ],
                 style={
