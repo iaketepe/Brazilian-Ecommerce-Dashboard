@@ -1,4 +1,6 @@
+from pipeline.running import ingestion
 
+dfs = ingestion.ingest()
 
 # ACT 1:
 
