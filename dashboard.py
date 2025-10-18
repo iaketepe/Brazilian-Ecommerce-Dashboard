@@ -2,21 +2,24 @@ from dash import Dash, html, dcc, Output, Input, State
 import plotly.graph_objects as go
 from pipeline.running import processor
 
-app = Dash()
+app = Dash(__name__, suppress_callback_exceptions=True)
 
 #"Source Sans", sans-serif background-color: rgb(14, 17, 23);
 
 # Requires Dash 2.17.0 or later
 app.layout = html.Div([
+    dcc.Location(id='url', refresh=False),
+
     # Sidebar
     html.Button(">>",
-                id="sidebar-under-button",
-                style={
-                    "position": "absolute",
-                    "top": 20,
-                    "left": 20,
-                    "display": "block"
-                }),
+        id="sidebar-under-button",
+        style={
+            "position": "absolute",
+            "top": 20,
+            "left": 20,
+            "display": "block"
+        }
+    ),
     html.Div(
         [
             html.Button("<<",
@@ -52,21 +55,15 @@ app.layout = html.Div([
     ),
 
     # Page content
-    html.Div([
+    html.Div(
+        [
             html.H1("Brazilian Ecommerce Dashboard",
-                    style={
-                        "text-align": "center",
-                    }
+                style={
+                    "text-align": "center",
+                }
             ),
-            html.Div([
-                dcc.Interval(id='a1-review_intervals', interval=5000, n_intervals=0),
-                dcc.Graph(id='a1-review_score'),
-                html.Div([
-                    html.Span("★", style={'color': 'lightgray'}),
-                    html.Span("★", style={'color': 'gold', 'width': '43%', 'overflow': 'hidden', 'display': 'inline-block', "font-size" : 200}),
-                ])
-
-            ],
+            html.Div([],
+                id='act-content',
                 style={
                     "border": "1px solid black",
                     "display" : "flex",
@@ -79,7 +76,7 @@ app.layout = html.Div([
                "margin-top": "25px",
                "display": "flex",
                "flex-direction": "column",
-               }
+        }
     )
 ],
 style={
@@ -108,6 +105,42 @@ def toggle_sidebar(n_clicks, n_clicks2, sidebar_style):
 
     return sidebar_style
 
+@app.callback(
+    Output('act-content', 'children'),
+    Input('url', 'pathname')
+)
+def display_page(pathname):
+    if pathname == "/act-1":
+        return act_1()
+    elif pathname == "/act-2":
+        return act_2()
+    else:
+        return act_1()
+
+def act_1():
+    return [
+            dcc.Interval(id='a1-annual_revenue_intervals', interval=5000, n_intervals=0),
+            dcc.Graph(id='a1-annual_revenue'),
+            dcc.Interval(id='a1-review_intervals', interval=5000, n_intervals=0),
+            dcc.Graph(id='a1-review_score'),
+            html.Div([
+                html.Span("★", style={'color': 'lightgray'}),
+                html.Span("★", style={'color': 'gold', 'width': '43%', 'overflow': 'hidden', 'display': 'inline-block',
+                                      "font-size": 200}),
+            ])
+    ]
+
+def act_2():
+    return [
+            dcc.Interval(id='a1-review_intervals', interval=5000, n_intervals=0),
+            dcc.Graph(id='a1-review_score'),
+            html.Div([
+                html.Span("★", style={'color': 'lightgray'}),
+                html.Span("★", style={'color': 'gold', 'width': '43%', 'overflow': 'hidden', 'display': 'inline-block',
+                                      "font-size": 200}),
+            ])
+    ]
+
 
 @app.callback(
     Output('a1-review_score', 'figure'),
@@ -115,16 +148,23 @@ def toggle_sidebar(n_clicks, n_clicks2, sidebar_style):
 )
 def review_score(_):
     fig = go.Figure(go.Indicator(
-        mode="number+gauge+delta",
+        mode="number+delta",
         value=processor.review_score_avg,
         title={"text": "Average Review Score"},
-        gauge={
-            "axis": {"range": [0, 5]},
-            "bar": {"color": "green"},
-        }
     ))
-
     return fig
+
+@app.callback(
+    Output('a1-annual_revenue', 'figure'),
+    Input('a1-annual_revenue_intervals','n_intervals')
+)
+def annual_revenue_approximated(_):
+  fig = go.Figure(go.Indicator(
+      mode = "number+delta",
+      value = processor.total_verified_revenue,
+      domain = {'row': 0, 'column': 0}
+  ));
+  return fig
 
 
 
