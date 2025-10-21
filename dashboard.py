@@ -1,3 +1,4 @@
+from click import style
 from dash import Dash, html, dcc, Output, Input, State
 import plotly.graph_objects as go
 from pipeline.running import processor
@@ -67,8 +68,6 @@ app.layout = html.Div([
                 id='act-content',
                 style={
                     "border": "1px solid black",
-                    "display" : "flex",
-                    "flex": "1 1 0%"
                 }
             ),
         ],
@@ -119,29 +118,52 @@ def display_page(pathname):
         return act_1()
 
 def act_1():
-    layout = [
-            dcc.Interval(id='a1-annual_revenue_intervals', interval=10000, n_intervals=0),
-            dcc.Graph(id='a1-annual_revenue'),
-
+    layout = html.Div([
             html.Div([
-                dcc.Interval(id='a1-review_intervals', interval=10000, n_intervals=0),
-                dcc.Graph(id='a1-review_score', config={'staticPlot': True}),
                 html.Div([
-                        html.Span("★", style={'color': 'lightgray'}),
-                        html.Span("★",
-                                  style={'color': 'gold', 'width': '43%', 'overflow': 'hidden'}),
-                    ],
+                    dcc.Interval(id='a1-annual_revenue_intervals', interval=10000, n_intervals=0),
+                    dcc.Graph(id='a1-annual_revenue', style={"width": "100%", "height": "100%"}, config={'staticPlot': True, 'responsive': True} ),
+                ],
                     style={
-                        "font-size": 100,
-                        "display": "inline-block"
-                    }
-                ),
+                        "grid-column": "1",
+                        "grid-row": "1",
+                        "height": "100%",
+                    }),
+
+                html.Div([
+                    dcc.Interval(id='a1-review_intervals', interval=10000, n_intervals=0),
+                    dcc.Graph(
+                        id='a1-review_score',
+                        style={"width": "100%", "height": "100%"},
+                        config={'staticPlot': True, 'responsive': True}
+                    ),
+                ],
+                    style={
+                        "grid-column": "2",
+                        "grid-row": "1",
+                        "height": "100%",
+                    }),
+                html.Div("Item 3", style={"grid-column": "3", "grid-row": "1"}),
+                html.Div("Item 4", style={"grid-column": "4", "grid-row": "1"}),
+                html.Div("Item 5", style={"grid-column": "5", "grid-row": "1"}),
             ],
             style={
-                "display": "flex",
-                "align-items" : "center",
+                "display": "grid",
+                "grid-template-columns": "1.25fr 1fr 1fr 1fr 1fr",
+                "grid-gap": 10,
+                "align-items": "center",
+                "grid-auto-rows": "300px",
+            }),
+
+            html.Div([
+                html.Div("Item 6"),
+                html.Div("Item 7"),
+            ], style={
+                "display": "grid",
+                "grid-template-columns": "1fr 1fr",  # independent two-column layout
+                "grid-gap": "10px",
             })
-    ]
+    ])
 
     return layout
 
