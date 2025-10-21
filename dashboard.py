@@ -143,9 +143,30 @@ def act_1():
                         "grid-row": "1",
                         "height": "100%",
                     }),
-                html.Div("Item 3", style={"grid-column": "3", "grid-row": "1"}),
-                html.Div("Item 4", style={"grid-column": "4", "grid-row": "1"}),
-                html.Div("Item 5", style={"grid-column": "5", "grid-row": "1"}),
+                html.Div([
+                    dcc.Interval(id='a1-ratio_pf', interval=10000, n_intervals=0),
+                    dcc.Graph(
+                        id='a1-ratio_pf',
+                        style={"width": "100%", "height": "100%", "aspect-ratio" : "1 / 1","overflow": "visible"},
+                        config={'staticPlot': True, 'responsive': True}
+                    ),
+                ], style={"grid-column": "3", "grid-row": "1", "height": "100%", "width" : "100%"}),
+                html.Div([
+                    dcc.Interval(id='a1-ratio_sc', interval=10000, n_intervals=0),
+                    dcc.Graph(
+                        id='a1-ratio_sc',
+                        style={"width": "100%", "height": "100%", "aspect-ratio" : "1 / 1","overflow": "visible"},
+                        config={'staticPlot': True, 'responsive': True}
+                    ),
+                ], style={"grid-column": "4", "grid-row": "1", "height": "100%", "width" : "100%"}),
+                html.Div([
+                    dcc.Interval(id='a1-ratio_cc', interval=10000, n_intervals=0),
+                    dcc.Graph(
+                        id='a1-ratio_cc',
+                        style={"width": "100%", "height": "100%", "aspect-ratio" : "1 / 1","overflow": "visible"},
+                        config={'staticPlot': True, 'responsive': True}
+                    ),
+                ], style={"grid-column": "5", "grid-row": "1", "height": "100%", "width" : "100%"}),
             ],
             style={
                 "display": "grid",
@@ -180,6 +201,27 @@ def review_score(_):
 )
 def annual_revenue_approximated(_):
   return visualizer.acts["act_1"].annual_revenue_approximated()
+
+@app.callback(
+    Output('a1-ratio_pf', 'figure'),
+    Input('a1-ratio_pf','n_intervals')
+)
+def createRatioInstallmentsInFull(_):
+    return visualizer.acts["act_1"].createRatioInstallmentsInFull()
+
+@app.callback(
+    Output('a1-ratio_sc', 'figure'),
+    Input('a1-ratio_sc', 'n_intervals')
+)
+def createRatioSellerCarrier(_):
+    return visualizer.acts["act_1"].createRatioSellerCarrier()
+
+@app.callback(
+    Output('a1-ratio_cc', 'figure'),
+    Input('a1-ratio_cc', 'n_intervals')
+)
+def createRatioCarrierCustomer(_):
+    return visualizer.acts["act_1"].createRatioCarrierCustomer()
 
 
 def act_2():

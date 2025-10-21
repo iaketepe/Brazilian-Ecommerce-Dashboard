@@ -34,37 +34,38 @@ class Act1:
         )
         return fig
 
-    def createRatio(value, desc):
+    def createRatio(self, value, desc):
         value = value * 100  # 75% achieved value=75
         fig = go.Figure(go.Pie(
             values=[value, 100 - value],
             hole=0.95,  # makes it a donut
             marker_colors=['green', 'lightgray'],
             textinfo='none',  # remove labels
-            hoverinfo='label+percent'
         ))
+        fig.update_traces(domain=dict(x=[0, 1], y=[0, 1]))
         fig.add_annotation(
             text=f"{int(value)}%",  # text to display
-            x=0.5, y=0.7,  # center of the figure
-            font_size=100,
-            showarrow=False
-        )
-        fig.add_annotation(
-            text=f"{desc}",
-            x=0.5, y=0.2,  # center of the figure
-            font_size=30,
+            x=0.5, y=0.5,  # center of the figure
+            font=dict(size=40),
             showarrow=False
         )
         fig.update_layout(
+            margin=dict(t=100, b=30, l=50, r=50),  # same for all
+            title=dict(text=desc, font=dict(size=16),x=0.5, xanchor="center", y=0.95,yanchor="top"),
             showlegend=False,
-            margin=dict(t=20, b=20, l=20, r=20)
         )
 
-        config = {
-            'staticPlot': False
-        }
-
         return fig
+
+    def createRatioInstallmentsInFull(self):
+        return self.createRatio(processor.ratio_delivered_orders_paid_in_full,"<br>Orders Paid<br><b>in full</b><br>with installments")
+
+    def createRatioSellerCarrier(self):
+        return self.createRatio(processor.ratio_orders_delivered_shipped,"<br>Orders shipped<br><b>Seller → Carrier</b><br>before deadline")
+
+    def createRatioCarrierCustomer(self):
+        return self.createRatio(processor.ratio_orders_estimated_delivered,"<br>Orders Delivered<br><b>Carrier → Customer</b><br>before deadline")
+
 
 
 class Visualizer:
