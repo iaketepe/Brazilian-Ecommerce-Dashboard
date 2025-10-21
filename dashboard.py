@@ -1,6 +1,7 @@
 from dash import Dash, html, dcc, Output, Input, State
 import plotly.graph_objects as go
 from pipeline.running import processor
+from visualizer import visualizer
 
 app = Dash(__name__, suppress_callback_exceptions=True)
 
@@ -118,53 +119,53 @@ def display_page(pathname):
         return act_1()
 
 def act_1():
-    return [
-            dcc.Interval(id='a1-annual_revenue_intervals', interval=5000, n_intervals=0),
+    layout = [
+            dcc.Interval(id='a1-annual_revenue_intervals', interval=10000, n_intervals=0),
             dcc.Graph(id='a1-annual_revenue'),
-            dcc.Interval(id='a1-review_intervals', interval=5000, n_intervals=0),
-            dcc.Graph(id='a1-review_score'),
+
             html.Div([
-                html.Span("★", style={'color': 'lightgray'}),
-                html.Span("★", style={'color': 'gold', 'width': '43%', 'overflow': 'hidden', 'display': 'inline-block',
-                                      "font-size": 200}),
-            ])
+                dcc.Interval(id='a1-review_intervals', interval=10000, n_intervals=0),
+                dcc.Graph(id='a1-review_score', config={'staticPlot': True}),
+                html.Div([
+                        html.Span("★", style={'color': 'lightgray'}),
+                        html.Span("★",
+                                  style={'color': 'gold', 'width': '43%', 'overflow': 'hidden'}),
+                    ],
+                    style={
+                        "font-size": 100,
+                        "display": "inline-block"
+                    }
+                ),
+            ],
+            style={
+                "display": "flex",
+                "align-items" : "center",
+            })
     ]
 
-def act_2():
-    return [
-            dcc.Interval(id='a1-review_intervals', interval=5000, n_intervals=0),
-            dcc.Graph(id='a1-review_score'),
-            html.Div([
-                html.Span("★", style={'color': 'lightgray'}),
-                html.Span("★", style={'color': 'gold', 'width': '43%', 'overflow': 'hidden', 'display': 'inline-block',
-                                      "font-size": 200}),
-            ])
-    ]
-
+    return layout
 
 @app.callback(
     Output('a1-review_score', 'figure'),
-    Input('a1-review_intervals','n_intervals')
+    Input('a1-review_intervals','n_intervals'),
 )
 def review_score(_):
-    fig = go.Figure(go.Indicator(
-        mode="number+delta",
-        value=processor.review_score_avg,
-        title={"text": "Average Review Score"},
-    ))
-    return fig
+    return visualizer.acts["act_1"].review_score()
 
 @app.callback(
     Output('a1-annual_revenue', 'figure'),
     Input('a1-annual_revenue_intervals','n_intervals')
 )
 def annual_revenue_approximated(_):
-  fig = go.Figure(go.Indicator(
-      mode = "number+delta",
-      value = processor.total_verified_revenue,
-      domain = {'row': 0, 'column': 0}
-  ));
-  return fig
+  return visualizer.acts["act_1"].annual_revenue_approximated()
+
+
+def act_2():
+    layout = [
+
+    ]
+    return layout
+
 
 
 
