@@ -135,7 +135,7 @@ def act_1():
                     dcc.Graph(
                         id='a1-review_score',
                         style={"width": "100%", "height": "100%"},
-                        config={'staticPlot': True, 'responsive': True}
+                        config={'staticPlot': True}
                     ),
                 ],
                     style={
@@ -148,7 +148,7 @@ def act_1():
                     dcc.Graph(
                         id='a1-ratio_pf',
                         style={"width": "100%", "height": "100%", "aspect-ratio" : "1 / 1","overflow": "visible"},
-                        config={'staticPlot': True, 'responsive': True}
+                        config={'staticPlot': True}
                     ),
                 ], style={"grid-column": "3", "grid-row": "1", "height": "100%", "width" : "100%"}),
                 html.Div([
@@ -156,7 +156,7 @@ def act_1():
                     dcc.Graph(
                         id='a1-ratio_sc',
                         style={"width": "100%", "height": "100%", "aspect-ratio" : "1 / 1","overflow": "visible"},
-                        config={'staticPlot': True, 'responsive': True}
+                        config={'staticPlot': True}
                     ),
                 ], style={"grid-column": "4", "grid-row": "1", "height": "100%", "width" : "100%"}),
                 html.Div([
@@ -164,7 +164,7 @@ def act_1():
                     dcc.Graph(
                         id='a1-ratio_cc',
                         style={"width": "100%", "height": "100%", "aspect-ratio" : "1 / 1","overflow": "visible"},
-                        config={'staticPlot': True, 'responsive': True}
+                        config={'staticPlot': True}
                     ),
                 ], style={"grid-column": "5", "grid-row": "1", "height": "100%", "width" : "100%"}),
             ],
@@ -174,11 +174,26 @@ def act_1():
                 "grid-gap": 10,
                 "align-items": "center",
                 "grid-auto-rows": "300px",
+                "overflow-x" : "auto"
             }),
 
             html.Div([
-                html.Div("Item 6"),
-                html.Div("Item 7"),
+                html.Div([
+                    dcc.Interval(id='a1-order_status', interval=10000, n_intervals=0),
+                    dcc.Graph(
+                        id='a1-order_status',
+                        style={"width": "100%", "height": "100%", "aspect-ratio": "1 / 1", "overflow": "visible"},
+                        config={'responsive': True}
+                    ),
+                ], style={"grid-column": "1", "grid-row": "1", "height": "100%", "width": "100%"}),
+                html.Div([
+                    dcc.Interval(id='a1-revenue_csum', interval=10000, n_intervals=0),
+                    dcc.Graph(
+                        id='a1-revenue_csum',
+                        style={"width": "100%", "height": "100%", "aspect-ratio" : "1 / 1","overflow": "visible"},
+                        config={'responsive': True}
+                    ),
+                ], style={"grid-column": "2", "grid-row": "1", "height": "100%", "width" : "100%"}),
             ], style={
                 "display": "grid",
                 "grid-template-columns": "1fr 1fr",  # independent two-column layout
@@ -222,6 +237,22 @@ def createRatioSellerCarrier(_):
 )
 def createRatioCarrierCustomer(_):
     return visualizer.acts["act_1"].createRatioCarrierCustomer()
+
+@app.callback(
+    Output('a1-order_status', 'figure'),
+    Input('a1-order_status', 'n_intervals')
+)
+def distribution_order_status(_):
+    return visualizer.acts["act_1"].distribution_order_status()
+
+@app.callback(
+    Output('a1-revenue_csum', 'figure'),
+    Input('a1-revenue_csum', 'n_intervals')
+)
+def monthly_annual_revenue_approximated(_):
+    return visualizer.acts["act_1"].monthly_annual_revenue_approximated()
+
+
 
 
 def act_2():

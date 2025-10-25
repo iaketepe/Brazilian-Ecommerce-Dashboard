@@ -51,7 +51,7 @@ orders_delivered_shipped_sum = (orders_seller_carrier['order_delivered_carrier_d
 ratio_orders_delivered_shipped = orders_delivered_shipped_sum / orders_seller_carrier.shape[0]
 
 
-# 4 Orders paid in full with installments
+# 4 Ratio of Orders paid in full with installments
 
 df_payment_installments = df_delivered_revenue.copy()
 
@@ -68,3 +68,6 @@ ratio_delivered_orders_paid_in_full = delivered_orders_paid_in_full_sum / df_pay
 
 orders_estimated_delivered_sum = (delivered_orders['order_delivered_customer_date'] <= delivered_orders['order_estimated_delivery_date']).sum()
 ratio_orders_estimated_delivered = orders_estimated_delivered_sum / delivered_orders.shape[0]
+
+# 6 Distribution of Orders by Status
+
