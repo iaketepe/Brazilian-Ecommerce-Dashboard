@@ -3,3 +3,4 @@ pandas
 dash
 plotly
 psycopg
+python-dotenv

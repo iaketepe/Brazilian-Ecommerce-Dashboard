@@ -1,6 +1,8 @@
 import psycopg
+from dotenv import load_dotenv
 import os
 
+load_dotenv()
 
 class DB:
     def __init__(self):
@@ -18,9 +20,11 @@ class DB:
             self._cur = None
     def is_connected(self):
         return self._conn is not None and self._cur is not None
+
     def select_exists(self):
-        self._cur.execute("SELECT CASE WHEN EXISTS (SELECT * FROM X) THEN 1 ELSE 0")
+        self._cur.execute("SELECT CASE WHEN EXISTS (SELECT 1 FROM information_schema.tables WHERE table_schema='bed' AND table_name='act1') THEN 1 ELSE 0 END;")
         return self._cur.fetchone()[0] == 1
-    def write_to_db(self, processor):
+
+    #def write_to_db(self, processor):
 
 
