@@ -1,12 +1,12 @@
-from pipeline.running import processor
+from running import processor
 
 
-def Runner():
+class Runner:
     def __init__(self, db):
         self.db = db
 
-    def run(self):
+    def start(self):
         try:
-            processor
+            self.db.write_to_table("TEST_ACT1","metrics",processor.acts["ACT1"]["metrics"])
         except Exception as e:
             print(e)

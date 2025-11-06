@@ -1,4 +1,4 @@
-from pipeline.running import ingestion
+from running import ingestion
 
 dfs = ingestion.ingest()
 
@@ -71,3 +71,49 @@ ratio_orders_estimated_delivered = orders_estimated_delivered_sum / delivered_or
 
 # 6 Distribution of Orders by Status
 
+acts = {
+    "ACT1": {
+        "metrics": [
+            {
+                "name": "total_verified_revenue",
+                "description": "Total approximate annual revenue from delivered orders",
+                "value": float(total_verified_revenue)
+            },
+            {
+                "name": "review_score_avg",
+                "description": "Average review score of all orders",
+                "value": float(review_score_avg)
+            },
+            {
+                "name": "review_score_max",
+                "description": "Maximum review score of all orders",
+                "value": float(review_score_max)
+            },
+            {
+                "name": "ratio_orders_delivered_shipped",
+                "description": "Ratio of orders shipped before shipping limit date",
+                "value": float(ratio_orders_delivered_shipped)
+            },
+            {
+                "name": "ratio_delivered_orders_paid_in_full",
+                "description": "Ratio of delivered orders paid in full",
+                "value": float(ratio_delivered_orders_paid_in_full)
+            },
+            {
+                "name": "ratio_orders_estimated_delivered",
+                "description": "Ratio of orders delivered on or before estimated delivery date",
+                "value": float(ratio_orders_estimated_delivered)
+            },
+        ],
+
+        "cumulative_revenue": df_delivered_revenue[['order_id', 'order_delivered_customer_date', 'cumulative_revenue']].to_dict(orient='records'),
+
+        "order_status": (
+            dfs['olist_orders_dataset']['order_status']
+            .value_counts()
+            #.reset_index()
+            #.rename(columns={'index': 'status', 'order_status': 'count'})
+            .to_dict()
+        )
+    }
+}

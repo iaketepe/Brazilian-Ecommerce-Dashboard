@@ -1,4 +1,4 @@
-#from runner import runner
+import runner
 from db import DB
 import sys
 
@@ -9,7 +9,11 @@ if not(db.is_connected()):
     sys.exit(1)
 
 
-if not(db.select_exists()):
+if not(db.select_exists("TEST_ACT1","metrics")):
     #runner = Runner(db)
     #runner.run()
     print("Db exists but no data")
+else:
+    print("DB exists")
+    r = runner.Runner(db)
+    r.start()
