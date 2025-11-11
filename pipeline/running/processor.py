@@ -1,6 +1,8 @@
-from running import ingestion
+from pipeline.running import ingestion
 
 dfs = ingestion.ingest()
+
+acts = {}
 
 # ACT 1:
 
@@ -71,8 +73,7 @@ ratio_orders_estimated_delivered = orders_estimated_delivered_sum / delivered_or
 
 # 6 Distribution of Orders by Status
 
-acts = {
-    "ACT1": {
+acts["ACT1"] = {
         "metrics": [
             {
                 "name": "total_verified_revenue",
@@ -111,9 +112,6 @@ acts = {
         "order_status": (
             dfs['olist_orders_dataset']['order_status']
             .value_counts()
-            #.reset_index()
-            #.rename(columns={'index': 'status', 'order_status': 'count'})
             .to_dict()
         )
     }
-}

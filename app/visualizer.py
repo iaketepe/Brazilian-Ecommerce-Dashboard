@@ -2,13 +2,23 @@ from dash import Dash, html, dcc, Output, Input, State
 import plotly.graph_objects as go
 import plotly.express as px
 from pipeline.running import processor
+from app.simpleDB import SimpleDB
 
 
 class Act1:
+    def __init__(self, actData):
+        self.actData = actData
+
+    def __getattr__(self, name):
+        for rec in self.actData:
+            if rec['name'] == name:
+                return rec['value']
+        return None
+
     def annual_revenue_approximated(self):
         fig = go.Figure(go.Indicator(
             mode="number+delta",
-            value=processor.total_verified_revenue,
+            value=float(self.total_verified_revenue),
             title={"text": "Approximate Annual Revenue"},
         ))
         return fig
@@ -20,7 +30,7 @@ class Act1:
     def review_score(self):
         fig = go.Figure(go.Indicator(
             mode="number+delta",
-            value=processor.review_score_avg,
+            value=float(self.review_score_avg),
             title={"text": "Average Review Score"},
         ))
         return fig
@@ -35,9 +45,9 @@ class Act1:
         return fig
 
     def createRatio(self, value, desc):
-        value = value * 100  # 75% achieved value=75
+        value = float(value) * 100  # 75% achieved value=75
         fig = go.Figure(go.Pie(
-            values=[value, 100 - value],
+            values=[value, (100 - value)],
             hole=0.95,  # makes it a donut
             marker_colors=['green', 'lightgray'],
             textinfo='none',  # remove labels
@@ -58,20 +68,23 @@ class Act1:
         return fig
 
     def createRatioInstallmentsInFull(self):
-        return self.createRatio(processor.ratio_delivered_orders_paid_in_full,"<br>Orders Paid<br><b>in full</b><br>with installments")
+        return self.createRatio(self.ratio_delivered_orders_paid_in_full,"<br>Orders Paid<br><b>in full</b><br>with installments")
 
     def createRatioSellerCarrier(self):
-        return self.createRatio(processor.ratio_orders_delivered_shipped,"<br>Orders shipped<br><b>Seller → Carrier</b><br>before deadline")
+        return self.createRatio(self.ratio_orders_delivered_shipped,"<br>Orders shipped<br><b>Seller → Carrier</b><br>before deadline")
 
     def createRatioCarrierCustomer(self):
-        return self.createRatio(processor.ratio_orders_estimated_delivered,"<br>Orders Delivered<br><b>Carrier → Customer</b><br>before deadline")
+        return self.createRatio(self.ratio_orders_estimated_delivered,"<br>Orders Delivered<br><b>Carrier → Customer</b><br>before deadline")
 
 
 
 class Visualizer:
     def __init__(self): #, theme="light"):
         #self.theme = theme
-        self.acts = {"act_1" : Act1()}
+        self.simpledb = SimpleDB()
+        self.acts = {"act_1" : Act1(self.simpledb.get_table("TEST_ACT1","metrics"))}
+        #print(self.acts['act_1'])
+        #print(self.acts['act_1'].review_score())
 
 
 

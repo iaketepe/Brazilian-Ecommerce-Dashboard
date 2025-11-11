@@ -1,8 +1,8 @@
 from click import style
 from dash import Dash, html, dcc, Output, Input, State
 import plotly.graph_objects as go
-from pipeline.running import processor
-from visualizer import visualizer
+#from ..pipeline.running import processor
+from app.visualizer import visualizer
 
 app = Dash(__name__, suppress_callback_exceptions=True)
 

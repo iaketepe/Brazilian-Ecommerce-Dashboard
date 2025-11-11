@@ -40,6 +40,7 @@ So there wasn't much difference between the two. However, as I was developing, I
 ### Designing in Plotly Dash
 Something I've realized is the subtle difference between using Plotly Dash vs HTML/CSS. For the most part its similar, you still write with CSS rules and HTML elements with Python as an intermediary. However, since Dash has its own ways of handling web design, I had to take a step back from designing and focus on understanding Dash. Methods I would have quickly applied like page wrapping (for min-width clamps), or patterns for absolute-relative elements wouldn't work as easily as they did.
 
+### 
 
 ## ACT Analysis
 
