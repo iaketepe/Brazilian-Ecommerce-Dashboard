@@ -109,9 +109,10 @@ acts["ACT1"] = {
 
         "cumulative_revenue": df_delivered_revenue[['order_id', 'order_delivered_customer_date', 'cumulative_revenue']].to_dict(orient='records'),
 
-        "order_status": (
+
+        "order_status": [
             dfs['olist_orders_dataset']['order_status']
             .value_counts()
             .to_dict()
-        )
+        ]
     }

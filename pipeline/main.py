@@ -1,5 +1,5 @@
-import runner
-from db import DB
+from pipeline import runner
+from pipeline.db import DB
 import sys
 
 db = DB()
