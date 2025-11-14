@@ -16,15 +16,16 @@
       - Pipeline sends analysis to DB
       - 'App' requests DB info from Pipeline service, rendering data
 
-Result: I chose designing a service-based application based on option A. After doing some research, I realized that option A was better because it increases the amount of abstraction between them. This abstraction is, I believe makes option A closer to real world workflows.
+Result: I chose designing a service-based application based on option A. After doing some research, I realized that option A was better because it increases the amount of abstraction between layers. This abstraction is, I believe makes option A closer to real world workflows.
 
 
-## Choosing Technologies
+## Stage Design
+
+### Pipeline Design
 
 
-
-### Web App Design
-Finally, I have designing my dashboard as a web app. I had two options:
+### App Design
+Finally, I've started to design my dashboard as a web app. I had two options:
   - Streamlit
     - Simple to use
     - Very limited (Difficult to interact with html directly)
@@ -51,6 +52,5 @@ Since there was no direct column for revenue, I had to calculate it by cross-ref
 In order to do this though, I would need to preprocess my order timestamps, converting them from string to DateTime. However, this posed a new challenge, which order timestamp should I use for my analysis? Initially, I was planning on using order_purchase_timestamp, but since multiple transactions exist for a given order (paying in installments), I wasn't sure using it would give me an accurate result. Also, transaction records have no timetamp directly associated, so I can't traverse them to find the last transaction date for approximation.
 
 In the end, my best option was to use the order_delivered_customer_date since that was the date has most likely chance of everything being resolved.
-
 
 

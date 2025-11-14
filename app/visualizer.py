@@ -1,46 +1,57 @@
 from dash import Dash, html, dcc, Output, Input, State
 import plotly.graph_objects as go
 import plotly.express as px
-from pipeline.running import processor
+import pandas as pd
 from app.simpleDB import SimpleDB
+
+class TableWrapper:
+    def __init__(self, tableData):
+        self.tableData = tableData
+        self._lookup = {rec['name']: rec['value'] for rec in tableData}
+
+    def __getattr__(self, name):
+        return self._lookup.get(name)
+
+    def __getitem__(self, name):
+        return self._lookup.get(name)
 
 
 class Act1:
     def __init__(self, actData):
-        self.actData = actData
+        # Promote each table to an attribute
+        for table_name, table in actData.items():
+            setattr(self, table_name, table)
 
-    def __getattr__(self, name):
-        for rec in self.actData:
-            if rec['name'] == name:
-                return rec['value']
-        return None
+    def __getitem__(self, table_name):
+        return getattr(self, table_name)
 
     def annual_revenue_approximated(self):
         fig = go.Figure(go.Indicator(
             mode="number+delta",
-            value=float(self.total_verified_revenue),
-            title={"text": "Approximate Annual Revenue"},
+            value=float(self.metrics.total_verified_revenue),
+            title={"text": "Approximate Total Revenue"},
         ))
         return fig
 
     def monthly_annual_revenue_approximated(self):
-        fig = px.line(processor.df_delivered_revenue, x='order_delivered_customer_date', y='cumulative_revenue')
+        fig = px.line(self.cumulative_revenue, x='order_delivered_customer_date', y='cumulative_revenue')
         return fig
 
     def review_score(self):
         fig = go.Figure(go.Indicator(
             mode="number+delta",
-            value=float(self.review_score_avg),
+            value=float(self.metrics.review_score_avg),
             title={"text": "Average Review Score"},
         ))
         return fig
 
     def distribution_order_status(self):
-        fig = px.histogram(
-            processor.dfs['olist_orders_dataset'],
-            x='order_status',
+        fig = px.bar(
+            x=self.order_status.index,
+            y=self.order_status.values,
+            labels={'x': 'Order Status', 'y': 'Count'},
             title='Distribution of Orders by Status',
-            text_auto=True  # adds count labels on top
+            text_auto=True
         )
         return fig
 
@@ -68,13 +79,13 @@ class Act1:
         return fig
 
     def createRatioInstallmentsInFull(self):
-        return self.createRatio(self.ratio_delivered_orders_paid_in_full,"<br>Orders Paid<br><b>in full</b><br>with installments")
+        return self.createRatio(self.metrics.ratio_delivered_orders_paid_in_full,"<br>Orders Paid<br><b>in full</b><br>with installments")
 
     def createRatioSellerCarrier(self):
-        return self.createRatio(self.ratio_orders_delivered_shipped,"<br>Orders shipped<br><b>Seller → Carrier</b><br>before deadline")
+        return self.createRatio(self.metrics.ratio_orders_delivered_shipped,"<br>Orders shipped<br><b>Seller → Carrier</b><br>before deadline")
 
     def createRatioCarrierCustomer(self):
-        return self.createRatio(self.ratio_orders_estimated_delivered,"<br>Orders Delivered<br><b>Carrier → Customer</b><br>before deadline")
+        return self.createRatio(self.metrics.ratio_orders_estimated_delivered,"<br>Orders Delivered<br><b>Carrier → Customer</b><br>before deadline")
 
 
 
@@ -82,11 +93,14 @@ class Visualizer:
     def __init__(self): #, theme="light"):
         #self.theme = theme
         self.simpledb = SimpleDB()
-        self.acts = {"act_1" : Act1(self.simpledb.get_table("TEST_ACT1","metrics"))}
-        #print(self.acts['act_1'])
-        #print(self.acts['act_1'].review_score())
 
+        order_status_data = self.simpledb.get_table("TEST_ACT1","order_status")
 
+        self.acts = {"act_1" : Act1({
+            "metrics" : TableWrapper(self.simpledb.get_table("TEST_ACT1","metrics")),
+            "order_status" : pd.Series(order_status_data[0])[1:],
+            "cumulative_revenue" : self.simpledb.get_table("TEST_ACT1","cumulative_revenue"),
+        })}
 
     def get_Acts(self):
         return self.acts

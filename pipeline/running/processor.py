@@ -1,4 +1,5 @@
 from pipeline.running import ingestion
+import pandas as pd
 
 dfs = ingestion.ingest()
 
@@ -27,9 +28,22 @@ df_delivered_revenue = df_revenue.merge(
 total_verified_revenue = df_delivered_revenue['payment_value'].sum()
 
 # 1: Cumulative Approximate Annual Revenue
-df_delivered_revenue = df_delivered_revenue.sort_values('order_delivered_customer_date')
 
-df_delivered_revenue['cumulative_revenue'] = df_delivered_revenue['payment_value'].cumsum()
+df_month_delivered_revenue = df_delivered_revenue.copy()
+df_month_delivered_revenue['order_delivered_customer_date'] = pd.to_datetime(df_month_delivered_revenue['order_delivered_customer_date'])
+df_month_delivered_revenue = df_month_delivered_revenue.groupby(
+    df_month_delivered_revenue['order_delivered_customer_date'].dt.to_period('M')
+)['payment_value'].sum().reset_index(name='monthly_revenue')
+
+df_month_delivered_revenue['order_delivered_customer_date'] = df_month_delivered_revenue['order_delivered_customer_date'].astype(str)
+
+df_month_delivered_revenue['cumulative_revenue'] = df_month_delivered_revenue['monthly_revenue'].cumsum()
+
+month_delivered_revenue = df_month_delivered_revenue.to_dict(orient='records')
+
+_ = """df_delivered_revenue = df_delivered_revenue.sort_values('order_delivered_customer_date')
+
+df_delivered_revenue['cumulative_revenue'] = df_delivered_revenue['payment_value'].cumsum()"""
 
 # 2: review scores overall average
 review_score_avg = dfs['olist_order_reviews_dataset']['review_score'].mean()
@@ -107,7 +121,7 @@ acts["ACT1"] = {
             },
         ],
 
-        "cumulative_revenue": df_delivered_revenue[['order_id', 'order_delivered_customer_date', 'cumulative_revenue']].to_dict(orient='records'),
+        "cumulative_revenue": month_delivered_revenue, #df_delivered_revenue[['order_id', 'order_delivered_customer_date', 'cumulative_revenue']].to_dict(orient='records'),
 
 
         "order_status": [
