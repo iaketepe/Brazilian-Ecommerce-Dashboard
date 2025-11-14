@@ -34,7 +34,16 @@ class Act1:
         return fig
 
     def monthly_annual_revenue_approximated(self):
-        fig = px.line(self.cumulative_revenue, x='order_delivered_customer_date', y='cumulative_revenue')
+        fig = px.line(
+            self.cumulative_revenue,
+            x='order_delivered_customer_date',
+            y='cumulative_revenue',
+            labels={
+                'order_delivered_customer_date': 'Timeline',
+                'cumulative_revenue': 'Revenue ($)'
+            },
+            title='Revenue Growth over Time',
+        )
         return fig
 
     def review_score(self):
