@@ -35,6 +35,18 @@ class DB:
         )
         self._cur.execute(query)
         return self._cur.fetchone()[0]
+    def select_exists_schema(self, schema_name):
+        query = sql.SQL("""
+                SELECT EXISTS (
+                    SELECT 1
+                    FROM information_schema.tables
+                    WHERE table_schema = {schema}
+                );
+            """).format(
+            schema=sql.Literal(schema_name)
+        )
+        self._cur.execute(query)
+        return self._cur.fetchone()[0]
 
     # creating a schema
     def create_schema(self, schema_name):

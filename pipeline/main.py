@@ -9,11 +9,9 @@ if not(db.is_connected()):
     sys.exit(1)
 
 
-if not(db.select_exists("TEST_ACT1","metrics")):
-    #runner = Runner(db)
-    #runner.run()
+if not(db.select_exists_schema("TEST_ACT1")):
     print("Db exists but no data")
-else:
-    print("DB exists")
     r = runner.Runner(db)
     r.start()
+else:
+    print("DB exists")
