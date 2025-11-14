@@ -122,7 +122,11 @@ def act_1():
             html.Div([
                 html.Div([
                     dcc.Interval(id='a1-annual_revenue_intervals', interval=10000, n_intervals=0),
-                    dcc.Graph(id='a1-annual_revenue', style={"width": "100%", "height": "100%"}, config={'staticPlot': True, 'responsive': True} ),
+                    dcc.Graph(
+                        id='a1-annual_revenue',
+                        style={"width": "100%", "height": "100%"},
+                        config={'staticPlot': True}
+                    ),
                 ],
                     style={
                         "grid-column": "1",
