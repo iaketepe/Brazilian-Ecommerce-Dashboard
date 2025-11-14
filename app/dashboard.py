@@ -2,6 +2,7 @@ from click import style
 from dash import Dash, html, dcc, Output, Input, State
 import plotly.graph_objects as go
 from app.visualizer import visualizer
+from waitress import serve
 
 app = Dash(__name__, suppress_callback_exceptions=True)
 
@@ -264,4 +265,14 @@ def act_2():
 
 
 if __name__ == '__main__':
-    app.run(debug=True)
+    serve(
+        app,
+        host='0.0.0.0',
+        port=8050,
+        threads=8
+    )
+    _= """app.run(
+        debug=False,
+        host='0.0.0.0',
+        port=8050
+    )"""

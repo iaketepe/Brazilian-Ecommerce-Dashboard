@@ -4,3 +4,4 @@ dash
 plotly
 psycopg
 python-dotenv
+waitress
