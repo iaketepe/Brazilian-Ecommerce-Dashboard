@@ -96,6 +96,32 @@ class Act1:
     def createRatioCarrierCustomer(self):
         return self.createRatio(self.metrics.ratio_orders_estimated_delivered,"<br>Orders Delivered<br><b>Carrier → Customer</b><br>before deadline")
 
+class Act2:
+    def __init__(self, actData):
+        # Promote each table to an attribute
+        for table_name, table in actData.items():
+            setattr(self, table_name, table)
+
+    def __getitem__(self, table_name):
+        return getattr(self, table_name)
+
+    def sellers_distribution(self):
+        fig = go.Figure(go.Indicator(
+            mode="number+delta",
+        ))
+        return fig
+
+    def customers_distribution(self):
+        fig = go.Figure(go.Indicator(
+            mode="number+delta",
+        ))
+        return fig
+
+    def seller_review_score_by_state(self):
+        fig = go.Figure(go.Indicator(
+            mode="number+delta",
+        ))
+        return fig
 
 
 class Visualizer:
