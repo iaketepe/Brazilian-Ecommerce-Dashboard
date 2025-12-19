@@ -10,6 +10,7 @@ class Runner:
 
     def start(self):
         try:
+            # storage.store(ACT1)->ACT2->ACT3
             # if there is no data create the data myself
             schema = "TEST_ACT1"
             tables = ["metrics, order_status, cumulative_revenue"]

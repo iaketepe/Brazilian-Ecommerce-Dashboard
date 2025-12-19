@@ -5,3 +5,4 @@ plotly
 psycopg
 python-dotenv
 waitress
+geopandas
