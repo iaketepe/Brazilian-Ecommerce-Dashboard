@@ -10,5 +10,8 @@ class Runner:
         try:
             # storage.store(TEST,ACT1)->ACT2->ACT3
             storage.store(self.db, "TEST", "ACT1")
+            # pipeline status = SUCCESS
         except Exception as e:
             print(e)
+            # pipeline status = FAILURE
+        #send pipeline record to db (status, , code version, pipeline runtime, modified: schema, table, rows)

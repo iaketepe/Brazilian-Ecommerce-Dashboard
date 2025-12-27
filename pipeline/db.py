@@ -47,6 +47,15 @@ class DB:
         )
         self._cur.execute(query)
         return self._cur.fetchone()[0]
+    def data_exists(self, schema_name, table_name):
+        query = sql.SQL("""
+                SELECT 1 FROM {}.{} LIMIT 1
+            """).format(
+            sql.Identifier(schema_name),
+            sql.Identifier(table_name)
+        )
+        self._cur.execute(query)
+        return self._cur.fetchone()[0]
 
     # creating a schema
     def create_schema(self, schema_name):
