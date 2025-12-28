@@ -70,7 +70,6 @@ class DB:
         )
         self._cur.execute(query)
 
-    #def write_to_table(self, processor, table_name):
     def write_to_table(self, schema_name, table_name, data):
         if not (data):
             print("Missing data for write")
@@ -103,4 +102,18 @@ class DB:
         self._conn.commit()
         print(f"Successfully inserted {len(data)} record(s) into {schema_name}.{table_name}.")
 
+    def create_pipeline_runs_table(self, schema_name):
+        query = sql.SQL("""
+            CREATE TABLE IF NOT EXISTS {}.pipeline_runs (
+                run_id SERIAL PRIMARY KEY,
+                status TEXT,
+                code_version TEXT,
+                run_date DATE,
+                time_elapsed INTERVAL,
+                error_message TEXT
+            )
+        """).format(sql.Identifier(schema_name))
+
+        self._cur.execute(query)
+        self._conn.commit()
 
