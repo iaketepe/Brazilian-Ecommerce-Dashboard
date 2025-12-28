@@ -29,7 +29,7 @@ class Runner:
         pipeline_run = [{
             "status": status,
             "code_version" : gittool.get_git_version(),
-            "date": run_date,
+            "run_date": run_date,
             "time_elapsed": run_time,
             "error_message" : error_message
         }]
