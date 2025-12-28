@@ -92,32 +92,32 @@ acts["ACT1"] = {
             {
                 "name": "total_verified_revenue",
                 "description": "Total approximate annual revenue from delivered orders",
-                "value": float(total_verified_revenue)
+                "value": str(total_verified_revenue)
             },
             {
                 "name": "review_score_avg",
                 "description": "Average review score of all orders",
-                "value": float(review_score_avg)
+                "value": str(review_score_avg)
             },
             {
                 "name": "review_score_max",
                 "description": "Maximum review score of all orders",
-                "value": float(review_score_max)
+                "value": str(review_score_max)
             },
             {
                 "name": "ratio_orders_delivered_shipped",
                 "description": "Ratio of orders shipped before shipping limit date",
-                "value": float(ratio_orders_delivered_shipped)
+                "value": str(ratio_orders_delivered_shipped)
             },
             {
                 "name": "ratio_delivered_orders_paid_in_full",
                 "description": "Ratio of delivered orders paid in full",
-                "value": float(ratio_delivered_orders_paid_in_full)
+                "value": str(ratio_delivered_orders_paid_in_full)
             },
             {
                 "name": "ratio_orders_estimated_delivered",
                 "description": "Ratio of orders delivered on or before estimated delivery date",
-                "value": float(ratio_orders_estimated_delivered)
+                "value": str(ratio_orders_estimated_delivered)
             },
         ],
 

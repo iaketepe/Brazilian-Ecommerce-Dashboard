@@ -36,5 +36,5 @@ class Runner:
 
         metadata_schema_name = schema_base + "_" + "METADATA"
         self.db.create_schema(metadata_schema_name)
-        self.db.create_pipeline_runs_table('pipeline_runs')
+        self.db.create_pipeline_runs_table(metadata_schema_name)
         self.db.write_to_table(metadata_schema_name,"pipeline_runs", pipeline_run)

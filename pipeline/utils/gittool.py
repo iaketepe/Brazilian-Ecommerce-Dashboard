@@ -1,6 +1,9 @@
 import subprocess
 
 def get_git_version():
+    """
+    Returns the current code version of the project.
+    """
     try:
         commit = subprocess.check_output(
             ["git", "rev-parse", "HEAD"], stderr=subprocess.DEVNULL
