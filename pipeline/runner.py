@@ -18,7 +18,6 @@ class Runner:
                     storage.store(self.db, schema_base, act_name)
             status = "SUCCESS"
         except Exception as e:
-            print(e)
             status = "FAILURE"
             error_message = str(e)
 
