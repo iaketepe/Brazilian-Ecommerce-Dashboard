@@ -70,6 +70,7 @@ class DB:
         )
         self._cur.execute(query)
 
+
     def write_to_table(self, schema_name, table_name, data):
         if not (data):
             print("Missing data for write")
@@ -92,14 +93,8 @@ class DB:
                 sql.SQL(', ').join(sql.Placeholder() * len(values))
             )
 
-            try:
-                self._cur.execute(query, values)
-            except Exception as e:
-                print(f"Failed to insert record: {e}")
-                self._conn.rollback()
-                return
+        self._cur.execute(query, values)
 
-        self._conn.commit()
         print(f"Successfully inserted {len(data)} record(s) into {schema_name}.{table_name}.")
 
     def create_pipeline_runs_table(self, schema_name):
@@ -115,5 +110,4 @@ class DB:
         """).format(sql.Identifier(schema_name))
 
         self._cur.execute(query)
-        self._conn.commit()
 

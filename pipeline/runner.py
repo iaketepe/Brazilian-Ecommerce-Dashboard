@@ -11,11 +11,12 @@ class Runner:
         dt = datetime.now(timezone.utc)
         error_message = "N/A"
         try:
-            schema_base = "TEST"
-            act_names = ['ACT1']
-
-            for act_name in act_names:
-                storage.store(self.db, schema_base, act_name)
+            with self.db._conn.transaction():
+                schema_base = "TEST"
+                act_names = ['ACT1']
+                print("before storage module")
+                for act_name in act_names:
+                    storage.store(self.db, schema_base, act_name)
             status = "SUCCESS"
         except Exception as e:
             print(e)
@@ -34,5 +35,6 @@ class Runner:
         }]
 
         metadata_schema_name = schema_base + "_" + "METADATA"
-        self.db.create_pipeline_runs_table(metadata_schema_name)
+        self.db.create_schema(metadata_schema_name)
+        self.db.create_pipeline_runs_table('pipeline_runs')
         self.db.write_to_table(metadata_schema_name,"pipeline_runs", pipeline_run)

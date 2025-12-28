@@ -131,11 +131,12 @@ acts["ACT1"] = {
         ]
     }
 
+from importlib import resources
 import geopandas as gp
 import json
 
-geofile = "../../gadm41_BRA_1.json"
-gdf = gp.read_file(geofile)
+with resources.path("resources", "gadm41_BRA_1.json") as geofile:
+    gdf = gp.read_file(geofile)
 
 with open(geofile) as f:
     geojson_dict = json.load(f)
