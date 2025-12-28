@@ -101,7 +101,7 @@ class DB:
 
         self._cur.execute(query, values)
 
-        print(f"Successfully inserted {len(data)} record(s) into {schema_name}.{table_name}.")
+        print(f"Successfully inserted {len(data)} record(s) into the database")
 
     def create_pipeline_runs_table(self, schema_name):
         query = sql.SQL("""

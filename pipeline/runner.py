@@ -14,7 +14,6 @@ class Runner:
             with self.db._conn.transaction():
                 schema_base = "TEST"
                 act_names = ['ACT1']
-                print("before storage module")
                 for act_name in act_names:
                     storage.store(self.db, schema_base, act_name)
             status = "SUCCESS"
@@ -35,6 +34,8 @@ class Runner:
         }]
 
         metadata_schema_name = schema_base + "_" + "METADATA"
-        self.db.create_schema(metadata_schema_name)
-        self.db.create_pipeline_runs_table(metadata_schema_name)
-        self.db.write_to_table(metadata_schema_name,"pipeline_runs", pipeline_run)
+
+        with self.db._conn.transaction():
+            self.db.create_schema(metadata_schema_name)
+            self.db.create_pipeline_runs_table(metadata_schema_name)
+            self.db.write_to_table(metadata_schema_name,"pipeline_runs", pipeline_run)
