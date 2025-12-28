@@ -63,10 +63,16 @@ class DB:
             sql.Identifier(schema_name)
         )
         self._cur.execute(query)
-    def create_table(self, schema_name, table_name):
-        query = sql.SQL("CREATE TABLE IF NOT EXISTS {}.{}").format(
+    def create_table(self, schema_name, table_name, columns):
+        columns_sql = sql.SQL(', ').join(
+            sql.SQL("{} {}").format(sql.Identifier(col_name), sql.SQL(col_type))
+            for col_name, col_type in columns.items()
+        )
+
+        query = sql.SQL("CREATE TABLE IF NOT EXISTS {}.{} ({})").format(
             sql.Identifier(schema_name),
-            sql.Identifier(table_name)
+            sql.Identifier(table_name),
+            columns_sql
         )
         self._cur.execute(query)
 
