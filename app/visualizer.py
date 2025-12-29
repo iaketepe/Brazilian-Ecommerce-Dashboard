@@ -96,11 +96,14 @@ class Act1:
     def createRatioCarrierCustomer(self):
         return self.createRatio(self.metrics.ratio_orders_estimated_delivered,"<br>Orders Delivered<br><b>Carrier → Customer</b><br>before deadline")
 
+from importlib import resources
+import geopandas as gp
 import json
 
-geofile = "../../gadm41_BRA_1.json"
+with resources.path("resources", "gadm41_BRA_1.json") as geofile:
+    gdf = gp.read_file(geofile)
 
-with open(geofile) as f:
+with open(geofile, "r", encoding="utf-8") as f:
     geojson_dict = json.load(f)
 
 class Act2:
@@ -114,7 +117,7 @@ class Act2:
 
     def sellers_distribution(self):
         fig = px.choropleth_mapbox(
-            self.geo_distribution,
+            data_frame=self.geo_distributions,
             geojson=geojson_dict,
             locations='name',
             featureidkey='properties.NAME_1',
@@ -132,7 +135,7 @@ class Act2:
 
     def customers_distribution(self):
         fig = px.choropleth_mapbox(
-            self.geo_distribution,
+            data_frame=self.geo_distributions,
             geojson=geojson_dict,
             locations='name',
             featureidkey='properties.NAME_1',
@@ -150,7 +153,7 @@ class Act2:
 
     def seller_review_score_by_state(self):
         fig = px.choropleth_mapbox(
-            self.geo_distribution,
+            data_frame=self.geo_distributions,
             geojson=geojson_dict,
             locations='name',
             featureidkey='properties.NAME_1',
@@ -180,12 +183,13 @@ class Visualizer:
 
         order_status_data = self.simpledb.get_table("TEST_ACT1","order_status")
 
+
         self.acts = {"act_1" : Act1({
             "metrics" : TableWrapper(self.simpledb.get_table("TEST_ACT1","metrics")),
             "order_status" : pd.Series(order_status_data[0])[1:],
             "cumulative_revenue" : self.simpledb.get_table("TEST_ACT1","cumulative_revenue"),
         }),
-        "act_2" : Act2({"geo_distribution" : self.simpledb.get_table("TEST_ACT2","geo_distribution")})}
+        "act_2" : Act2({"geo_distributions" : self.simpledb.get_table("TEST_ACT2","geo_distributions")})}
 
     def get_Acts(self):
         return self.acts
