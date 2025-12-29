@@ -43,7 +43,7 @@ def get_sql_types(data):
     Returns a dict mapping column names to SQL types.
     """
     if not data:
-        return {}
+        return ValueError("Data is empty")
 
     first_row = data[0]
     types = infer_sql_types(list(first_row.values()))

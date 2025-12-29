@@ -55,7 +55,7 @@ class DB:
             sql.Identifier(table_name)
         )
         self._cur.execute(query)
-        return self._cur.fetchone()[0]
+        return self._cur.fetchone() is not None
 
     # creating a schema
     def create_schema(self, schema_name):
@@ -99,7 +99,7 @@ class DB:
                 sql.SQL(', ').join(sql.Placeholder() * len(values))
             )
 
-        self._cur.execute(query, values)
+            self._cur.execute(query, values)
 
         print(f"Successfully inserted {len(data)} record(s) into the database")
 

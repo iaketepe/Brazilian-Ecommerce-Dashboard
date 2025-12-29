@@ -226,5 +226,5 @@ geo_distributions = geo_distributions.merge(state_reviews, on=['NAME_1','state']
 geo_distributions.rename(columns={'NAME_1': 'name'}, inplace=True)
 
 acts["ACT2"] = {
-    "geo_distributions" : geo_distributions
+    "geo_distributions" : geo_distributions.to_dict('records')
 }
