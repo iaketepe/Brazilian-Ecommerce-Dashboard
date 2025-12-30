@@ -188,7 +188,7 @@ class Visualizer:
 
         self.acts = {"act_1" : Act1({
             "metrics" : TableWrapper(self.simpledb.get_table("BED_ACT1","metrics")),
-            "order_status" : pd.Series(order_status_data[0])[1:],
+            "order_status" : pd.Series(order_status_data[0]),
             "cumulative_revenue" : self.simpledb.get_table("BED_ACT1","cumulative_revenue"),
         }),
         #"act_2" : Act2({"geo_distributions" : self.simpledb.get_table("BED_ACT2","geo_distributions")})}
