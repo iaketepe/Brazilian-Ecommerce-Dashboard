@@ -47,6 +47,15 @@ class DB:
         )
         self._cur.execute(query)
         return self._cur.fetchone()[0]
+    def data_exists(self, schema_name, table_name):
+        query = sql.SQL("""
+                SELECT 1 FROM {}.{} LIMIT 1
+            """).format(
+            sql.Identifier(schema_name),
+            sql.Identifier(table_name)
+        )
+        self._cur.execute(query)
+        return self._cur.fetchone() is not None
 
     # creating a schema
     def create_schema(self, schema_name):
@@ -54,14 +63,20 @@ class DB:
             sql.Identifier(schema_name)
         )
         self._cur.execute(query)
-    def create_table(self, schema_name, table_name):
-        query = sql.SQL("CREATE TABLE IF NOT EXISTS {}.{}").format(
+    def create_table(self, schema_name, table_name, columns):
+        columns_sql = sql.SQL(', ').join(
+            sql.SQL("{} {}").format(sql.Identifier(col_name), sql.SQL(col_type))
+            for col_name, col_type in columns.items()
+        )
+
+        query = sql.SQL("CREATE TABLE IF NOT EXISTS {}.{} ({})").format(
             sql.Identifier(schema_name),
-            sql.Identifier(table_name)
+            sql.Identifier(table_name),
+            columns_sql
         )
         self._cur.execute(query)
 
-    #def write_to_table(self, processor, table_name):
+
     def write_to_table(self, schema_name, table_name, data):
         if not (data):
             print("Missing data for write")
@@ -84,14 +99,21 @@ class DB:
                 sql.SQL(', ').join(sql.Placeholder() * len(values))
             )
 
-            try:
-                self._cur.execute(query, values)
-            except Exception as e:
-                print(f"Failed to insert record: {e}")
-                self._conn.rollback()
-                return
+            self._cur.execute(query, values)
 
-        self._conn.commit()
-        print(f"Successfully inserted {len(data)} record(s) into {schema_name}.{table_name}.")
+        print(f"Successfully inserted {len(data)} record(s) into the database")
 
+    def create_pipeline_runs_table(self, schema_name):
+        query = sql.SQL("""
+            CREATE TABLE IF NOT EXISTS {}.pipeline_runs (
+                run_id SERIAL PRIMARY KEY,
+                status TEXT,
+                code_version TEXT,
+                run_date DATE,
+                time_elapsed INTERVAL,
+                error_message TEXT
+            )
+        """).format(sql.Identifier(schema_name))
+
+        self._cur.execute(query)
 

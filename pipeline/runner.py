@@ -1,29 +1,40 @@
-from pipeline.running import processor
+from pipeline.running import storage
+from pipeline.utils import gittool
+from datetime import datetime, timezone
 
 
 class Runner:
     def __init__(self, db):
         self.db = db
 
-    # def createDBAct(schema_name, schema array)
-        #
-
     def start(self):
+        dt = datetime.now(timezone.utc)
+        error_message = "N/A"
         try:
-            # if there is no data create the data myself
-            schema = "TEST_ACT1"
-            tables = ["metrics, order_status, cumulative_revenue"]
-            # create schema
-            self.db.create_schema(schema)
-            # create tables
-            for table in tables:
-                self.db.create_table(schema, table)
-            # write to table
-            if self.db.select_exists("TEST_ACT1","metrics"):
-                self.db.write_to_table("TEST_ACT1","metrics",processor.acts["ACT1"]["metrics"])
-            if self.db.select_exists("TEST_ACT1","order_status"):
-                self.db.write_to_table("TEST_ACT1","order_status",processor.acts["ACT1"]["order_status"])
-            if self.db.select_exists("TEST_ACT1","cumulative_revenue"):
-                self.db.write_to_table("TEST_ACT1","cumulative_revenue",processor.acts["ACT1"]["cumulative_revenue"])
+            with self.db._conn.transaction():
+                schema_base = "BED"
+                act_names = ['ACT1','ACT2']
+                for act_name in act_names:
+                    storage.store(self.db, schema_base, act_name)
+            status = "SUCCESS"
         except Exception as e:
-            print(e)
+            status = "FAILURE"
+            error_message = str(e)
+
+        run_date = dt.date()
+        run_time = datetime.now(timezone.utc) - dt
+
+        pipeline_run = [{
+            "status": status,
+            "code_version" : gittool.get_git_version(),
+            "run_date": run_date,
+            "time_elapsed": run_time,
+            "error_message" : error_message
+        }]
+
+        metadata_schema_name = schema_base + "_" + "METADATA"
+
+        with self.db._conn.transaction():
+            self.db.create_schema(metadata_schema_name)
+            self.db.create_pipeline_runs_table(metadata_schema_name)
+            self.db.write_to_table(metadata_schema_name,"pipeline_runs", pipeline_run)

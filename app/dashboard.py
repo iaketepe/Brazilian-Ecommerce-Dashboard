@@ -1,6 +1,8 @@
 from click import style
-from dash import Dash, html, dcc, Output, Input, State
+from dash import Dash, html, dcc, Output, Input, State, callback_context
+import plotly as pl
 import plotly.graph_objects as go
+import plotly.express as px
 from app.visualizer import visualizer
 from waitress import serve
 
@@ -48,7 +50,7 @@ app.layout = html.Div([
             "bottom": 0,
             "width": "320px",
             "padding": "20px",
-            "background-color": "#f8f9fa",
+            "backgroundColor": "#f8f9fa",
             "transition": "transform 0.3s",
             "zIndex": 1000,
             "overflow": "hidden",
@@ -61,7 +63,7 @@ app.layout = html.Div([
         [
             html.H1("Brazilian Ecommerce Dashboard",
                 style={
-                    "text-align": "center",
+                    "textAlign": "center",
                 }
             ),
             html.Div([],
@@ -73,9 +75,11 @@ app.layout = html.Div([
         ],
         id="page-content",
         style={"padding": "50px",
-               "margin-top": "25px",
+               "marginTop": "25px",
                "display": "flex",
-               "flex-direction": "column",
+               "flexDirection": "column",
+               #"width" : "100%",
+               #"height" : "100%"
         }
     )
 ],
@@ -122,7 +126,11 @@ def act_1():
             html.Div([
                 html.Div([
                     dcc.Interval(id='a1-annual_revenue_intervals', interval=10000, n_intervals=0),
-                    dcc.Graph(id='a1-annual_revenue', style={"width": "100%", "height": "100%"}, config={'staticPlot': True, 'responsive': True} ),
+                    dcc.Graph(
+                        id='a1-annual_revenue',
+                        style={"width": "100%", "height": "100%"},
+                        config={'staticPlot': True}
+                    ),
                 ],
                     style={
                         "grid-column": "1",
@@ -257,10 +265,78 @@ def monthly_annual_revenue_approximated(_):
 
 def act_2():
     layout = [
-
+        html.Div([
+            html.Div([
+                html.Div([
+                    html.Button("Sellers", id="btn-sellers", n_clicks=0),
+                    html.Button("Customers", id="btn-customers", n_clicks=0),
+                    html.Button("Reviews", id="btn-reviews", n_clicks=0),
+                ],
+                style={
+                    "display": "flex",
+                    "flexDirection": "row",
+                    "gap" : "5px",
+                    "border-radius" : "100%"
+                    #"height": "50%",
+                    #"maxHeight": "50%",
+                })
+            ],
+            style={
+                "display": "flex",
+                "justifyContent": "center",
+                "width": "100%",
+                "padding-top" : "20px",
+                #"maxWidth": "15%",
+                #"height": "100%",
+            }),
+            html.Div([
+                dcc.Graph(
+                    id="a2-distribution",
+                    style={"width": "100%", "height": "100%"}
+                )
+            ],
+            style={
+                #"width": "70%",
+                #"height": "100%",
+                "display" : "flex",
+                "flex" : "1",
+                #"aspectRatio" : "1.5 / 1",
+            }),
+        ],
+        style={
+            "display": "flex",
+            "flexDirection": "column",
+            "width" : "100%",
+            "height": "90vh",
+            #"divide" : "divi"
+        })
     ]
     return layout
 
+@app.callback(
+    Output('a2-distribution', 'figure'),
+    [
+        Input("btn-sellers", "n_clicks"),
+        Input("btn-customers", "n_clicks"),
+        Input("btn-reviews", "n_clicks"),
+    ],
+)
+def render_a2_graph(sellers_clicks, customers_clicks, reviews_clicks):
+    ctx = callback_context
+
+    button_id = ctx.triggered[0]["prop_id"].split(".")[0]
+
+    if button_id == "btn-sellers":
+        return visualizer.acts["act_2"].sellers_distribution()
+
+    if button_id == "btn-customers":
+        return visualizer.acts["act_2"].customers_distribution()
+
+    if button_id == "btn-reviews":
+        return visualizer.acts["act_2"].seller_review_score_by_state()
+
+    # Fallback
+    return visualizer.acts["act_2"].sellers_distribution()
 
 
 
@@ -271,8 +347,8 @@ if __name__ == '__main__':
         port=8050,
         threads=8
     )
-    _= """app.run(
-        debug=False,
+    _ = """app.run(
+        debug=True,
         host='0.0.0.0',
         port=8050
     )"""
