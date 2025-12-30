@@ -1,8 +1,5 @@
 from click import style
 from dash import Dash, html, dcc, Output, Input, State, callback_context
-import plotly as pl
-import plotly.graph_objects as go
-import plotly.express as px
 from app.visualizer import visualizer
 from waitress import serve
 
