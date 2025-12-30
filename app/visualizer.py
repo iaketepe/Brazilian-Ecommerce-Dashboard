@@ -181,17 +181,17 @@ class Visualizer:
         #self.theme = theme
         self.simpledb = SimpleDB()
 
-        order_status_data = self.simpledb.get_table("TEST_ACT1","order_status")
-        gd = pd.DataFrame(self.simpledb.get_table("TEST_ACT2","geo_distributions"))
+        order_status_data = self.simpledb.get_table("BED_ACT1","order_status")
+        gd = pd.DataFrame(self.simpledb.get_table("BED_ACT2","geo_distributions"))
         gd['review_score'] = gd['review_score'].astype(float)
 
 
         self.acts = {"act_1" : Act1({
-            "metrics" : TableWrapper(self.simpledb.get_table("TEST_ACT1","metrics")),
+            "metrics" : TableWrapper(self.simpledb.get_table("BED_ACT1","metrics")),
             "order_status" : pd.Series(order_status_data[0])[1:],
-            "cumulative_revenue" : self.simpledb.get_table("TEST_ACT1","cumulative_revenue"),
+            "cumulative_revenue" : self.simpledb.get_table("BED_ACT1","cumulative_revenue"),
         }),
-        #"act_2" : Act2({"geo_distributions" : self.simpledb.get_table("TEST_ACT2","geo_distributions")})}
+        #"act_2" : Act2({"geo_distributions" : self.simpledb.get_table("BED_ACT2","geo_distributions")})}
         "act_2": Act2({"geo_distributions": gd})}
 
     def get_Acts(self):

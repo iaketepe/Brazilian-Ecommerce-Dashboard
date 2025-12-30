@@ -12,7 +12,7 @@ class Runner:
         error_message = "N/A"
         try:
             with self.db._conn.transaction():
-                schema_base = "TEST"
+                schema_base = "BED"
                 act_names = ['ACT1','ACT2']
                 for act_name in act_names:
                     storage.store(self.db, schema_base, act_name)
