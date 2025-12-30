@@ -275,18 +275,17 @@ def act_2():
                 style={
                     "display": "flex",
                     "flexDirection": "row",
-                    "gap" : "5px"
+                    "gap" : "5px",
+                    "border-radius" : "100%"
                     #"height": "50%",
                     #"maxHeight": "50%",
                 })
             ],
             style={
                 "display": "flex",
-                "flexDirection": "column",
-                "justifyContent": "space-evenly",
-                "alignItems": "center",
+                "justifyContent": "center",
                 "width": "100%",
-                "padding" : "20px",
+                "padding-top" : "20px",
                 #"maxWidth": "15%",
                 #"height": "100%",
             }),
@@ -301,7 +300,7 @@ def act_2():
                 #"height": "100%",
                 "display" : "flex",
                 "flex" : "1",
-                "aspectRatio" : "1.5 / 1",
+                #"aspectRatio" : "1.5 / 1",
             }),
         ],
         style={
