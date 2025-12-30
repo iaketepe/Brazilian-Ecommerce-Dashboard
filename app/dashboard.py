@@ -274,7 +274,7 @@ def act_2():
                 ],
                 style={
                     "display": "flex",
-                    "flexDirection": "column",
+                    "flexDirection": "row",
                     "gap" : "5px"
                     #"height": "50%",
                     #"maxHeight": "50%",
@@ -283,10 +283,12 @@ def act_2():
             style={
                 "display": "flex",
                 "flexDirection": "column",
-                "justifyContent": "center",
+                "justifyContent": "space-evenly",
+                "alignItems": "center",
                 "width": "100%",
-                "maxWidth": "15%",
-                "height": "100%",
+                "padding" : "20px",
+                #"maxWidth": "15%",
+                #"height": "100%",
             }),
             html.Div([
                 dcc.Graph(
@@ -299,11 +301,12 @@ def act_2():
                 #"height": "100%",
                 "display" : "flex",
                 "flex" : "1",
-                "aspect-ratio" : "1 / 1",
+                "aspectRatio" : "1.5 / 1",
             }),
         ],
         style={
             "display": "flex",
+            "flexDirection": "column",
             "width" : "100%",
             "height": "90vh",
             #"divide" : "divi"
