@@ -41,10 +41,10 @@ app.layout = html.Div([
         ],
         id="sidebar",
         style={
-            "position": "absolute",
+            "position": "fixed",
             "top": 0,
             "left": 0,
-            "bottom": 0,
+            "height" : "100vh",
             "width": "320px",
             "padding": "20px",
             "backgroundColor": "#f8f9fa",
@@ -338,14 +338,14 @@ def render_a2_graph(sellers_clicks, customers_clicks, reviews_clicks):
 
 
 if __name__ == '__main__':
-    serve(
+    _ = """serve(
         app,
         host='0.0.0.0',
         port=8050,
         threads=8
-    )
-    _ = """app.run(
+    )"""
+    app.run(
         debug=True,
         host='0.0.0.0',
         port=8050
-    )"""
+    )
