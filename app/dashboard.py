@@ -341,14 +341,14 @@ def render_a2_graph(sellers_clicks, customers_clicks, reviews_clicks):
 
 
 if __name__ == '__main__':
-    _= """serve(
+    serve(
         app,
         host='0.0.0.0',
         port=8050,
         threads=8
-    )"""
-    app.run(
+    )
+    _ = """app.run(
         debug=True,
         host='0.0.0.0',
         port=8050
-    )
+    )"""
