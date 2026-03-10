@@ -88,3 +88,27 @@ For this I had three metrics:
   - Calculated by comparing order_delivered_customer_date with order_estimated_delivery_date and counting on-time deliveries.
   - Reflects customer experience and the platform’s ability to meet delivery promises.
 
+
+### ACT 2
+The focus of this act is to elaborate on Act 1 and bring more context. After realizing the sellers, customers and order could be traced back to their geography, I realized I could showcase this context through geodata. 
+
+This is why I focused on the following metrics:
+- Seller Distribution
+- Customer Distribution
+- Average Review Score (By State)
+
+These three allow for a better look of how we're performing across the nation.
+
+#### Seller Distribution
+By seeing the distribution of our sellers, we could understand more on our sellers. If most of our sellers are located in a similar location, then it allows us to do research later on why that's the case. It can also reduce scope for logistical issues since most of them would likely use similar 'routes' for delivery. Another factor is what I like to call a 'seller desert'. There may be locations where we have very little or no sellers. If that is the case, then we can ask questions on how to reach out or why we have no sellers in that location.
+
+To calculate this, I started out by grouping the sellers by their state, counting their respective numbers. Next, I merged the counts with a reference table mapping state names to their state 'codes'. This reference table would also account for the outcome of states without sellers. Finally, I converted the seller counts to integers to make the data clear.
+
+#### Customer Distribution
+The reasoning for this metric is similar to the previous one. We can understand more about our customers, even think about where most of customers are, where most aren't take action based on that information.  The approach was similar to the seller distribution as well.
+
+#### Average Review Score (By State)
+It's easy to look at an e-commerce platform as just one thing. Sometimes, though its better to look at it as a group of state-wide selling systems. Each system adheres to the platform's values flexibly, with their own logistics, sellers, etc. So, if we focus on the average review scores for the sellers in those states, it may give us a view into how well each 'system' is doing.
+
+To analyze average review scores by state, I first merged order review scores with their corresponding orders and linked each order to its seller and the seller’s state. For orders with multiple sellers, I aggregated to select a single seller and state per order. I then calculated the average review score for each seller state, ensuring that all states were included by merging with a reference table and filling missing values with 0. Finally, I combined this with the seller and customer geographic distributions to create a state-level dataset containing seller counts, customer counts, and average review scores, ready for visualization on the dashboard.
+
