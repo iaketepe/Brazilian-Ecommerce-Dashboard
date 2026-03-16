@@ -1,6 +1,6 @@
-
-import pandas as pd
 # ACT 1:
+import pandas as pd
+
 
 def calculate(dfs):
     # 0: BIG NUMBER - Approximate Annual Revenue
