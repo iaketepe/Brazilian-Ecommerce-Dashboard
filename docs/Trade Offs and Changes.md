@@ -48,6 +48,8 @@ Metrics - The recently analyzed data needed for the visualization of a given met
 
 I opted for Acts and Act types to be dictionaries. This is because of the O(1) access and there wasn't much need for index based traversal. The metrics I chose to have as list of records where each record was a dictionary. This was done so creating tables for metric data would be simple since I could rely on index based traversal. In terms of the records being dictionaries, this was also fine because they were lightweight and relied on the same columns so abstracting how I can reference that information would become easier for storage.
 
+NOTE: I am treating my acts modularly. So I stored my acts in the resources folder. Each is self-contained, so its analytics logic and the visualization class will be stored there.
+
 ##### Storage
 For storage, I had two problems to figure out: how to automate table/schema creation, and where transactional boundaries should actually live in the pipeline.
 
