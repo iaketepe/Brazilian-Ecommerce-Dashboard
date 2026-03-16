@@ -236,28 +236,24 @@ acts["ACT2"] = {
 
 order_items = dfs['olist_order_items_dataset']
 order_items = order_items[['order_id','product_id','seller_id','price','freight_value']]
-order_items
 
 orders = dfs['olist_orders_dataset']
 orders = orders[orders['order_status'] == 'delivered']
 orders = orders[['order_id','customer_id','order_purchase_timestamp','order_delivered_customer_date','order_estimated_delivery_date']]
-orders
 
 order_products = dfs['olist_products_dataset']
 order_products = order_products[['product_id','product_category_name','product_photos_qty']]
-order_products
 
 order_sellers = dfs['olist_sellers_dataset']
 order_sellers = order_sellers[['seller_id','seller_state']]
-order_sellers
 
 order_customers = dfs['olist_customers_dataset']
 order_customers = order_customers[['customer_id','customer_state']]
-order_customers
 
 order_reviews = dfs['olist_order_reviews_dataset']
 order_reviews = order_reviews[['order_id','review_score']]
-order_reviews
+
+product_category_translation = dfs['product_category_name_translation']
 
 ml_data = order_items.copy()
 
@@ -272,6 +268,13 @@ ml_data = ml_data.merge(
 ml_data = ml_data.merge(
     order_products,
     on="product_id",
+    how="inner"
+)
+
+# join translations
+ml_data = ml_data.merge(
+    product_category_translation,
+    on="product_category_name",
     how="inner"
 )
 
@@ -295,6 +298,12 @@ ml_data = ml_data.merge(
     on="order_id",
     how="inner"
 )
+
+ml_data.drop(columns='product_category_name',inplace=True)
+
+ml_data.rename(columns={"product_category_name_english" : "product_category_name"},inplace=True)
+
+ml_data.head()
 
 # 0 - number of orders per product category
 
@@ -346,11 +355,21 @@ categories = ml_data['product_category_name'].unique()
 review_bins = {}
 for category in categories:
     review_bins[category] = {
-        'review_scores': ml_data[ml_data['product_category_name'] == category]['review_score']
+        'review_scores': ml_data[ml_data['product_category_name']==category]['review_score']
         .value_counts()
-        .reindex([1, 2, 3, 4, 5], fill_value=0)
+        .reindex([1,2,3,4,5], fill_value=0)
         .to_dict()
     }
 
+# 5 - Histogram of average review_scores per seller in a category
 
+seller_avg = ml_data.groupby(['product_category_name','seller_id'])['review_score'].mean().reset_index()
 
+seller_review_bins = {}
+for category in categories:
+    seller_review_bins[category] = {
+        'review_scores': seller_avg[seller_avg['product_category_name']==category]['review_score']
+        .value_counts()
+        .reindex([1,2,3,4,5], fill_value=0)
+        .to_dict()
+    }
