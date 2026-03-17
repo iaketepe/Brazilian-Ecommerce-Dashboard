@@ -3,6 +3,7 @@ import plotly.graph_objects as go
 import plotly.express as px
 import pandas as pd
 from app.simpleDB import SimpleDB
+from resources.acts import a1
 
 class TableWrapper:
     def __init__(self, tableData):
