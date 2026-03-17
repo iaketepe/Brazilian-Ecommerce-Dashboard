@@ -143,3 +143,11 @@ def calculate(dfs):
             .reindex([1,2,3,4,5], fill_value=0)
             .to_dict()
         }
+
+    return {
+        "orders_per_category" : orders_per_category,
+        "top_sellers" : top_sellers,
+        "worst_sellers" : worst_sellers,
+        "review_bins" : review_bins,
+        "seller_review_bins" : seller_review_bins,
+    }
