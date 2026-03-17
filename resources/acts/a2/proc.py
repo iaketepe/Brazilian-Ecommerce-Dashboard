@@ -53,6 +53,8 @@ def calculate(dfs):
 
     df_customers_dist['customer_count'] = df_customers_dist['customer_count'].astype('Int64')
 
+    # 2 - Reviews Geographic Distribution
+
     first_half = pd.merge(
         dfs['olist_order_reviews_dataset'][['order_id', 'review_score']],
         dfs['olist_orders_dataset'][['order_id', 'order_status']],
