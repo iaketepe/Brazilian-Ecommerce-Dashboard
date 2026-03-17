@@ -1,7 +1,7 @@
 # ACT 3:
 import pandas as pd
 
-def calculate(dfs):
+def setting_up_calculations(dfs):
     ### Setting Up
 
     order_items = dfs['olist_order_items_dataset']
@@ -73,7 +73,10 @@ def calculate(dfs):
 
     ml_data.rename(columns={"product_category_name_english" : "product_category_name"},inplace=True)
 
-    ml_data.head()
+    return ml_data
+
+def calculate(dfs):
+    ml_data = setting_up_calculations(dfs)
 
     # 0 - number of orders per product category
 
