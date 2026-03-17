@@ -48,7 +48,9 @@ Metrics - The recently analyzed data needed for the visualization of a given met
 
 I opted for Acts and Act types to be dictionaries. This is because of the O(1) access and there wasn't much need for index based traversal. The metrics I chose to have as list of records where each record was a dictionary. This was done so creating tables for metric data would be simple since I could rely on index based traversal. In terms of the records being dictionaries, this was also fine because they were lightweight and relied on the same columns so abstracting how I can reference that information would become easier for storage.
 
-NOTE: I am treating my acts modularly. So I stored my acts in the resources folder. Each is self-contained, so its analytics logic and the visualization class will be stored there.
+Initially, I stored the actual logic for each act's analysis in the same module. However, sifting through that same module became cluttered and time-consuming. To fix this, I changed my framing on the system overall. App/ and Pipeline/ will be more grounded. They should be holding mechanisms that make up their subsystem. Act logic whether on the pipeline or on the app should be something modular. So I created an acts folder in resources and moved the analytics over there.
+
+
 
 ##### Storage
 For storage, I had two problems to figure out: how to automate table/schema creation, and where transactional boundaries should actually live in the pipeline.
@@ -85,6 +87,13 @@ For the most part the process stays as follows: Ingestion -> Analysis -> Storage
 However it became more like this: Storage -> Analysis -> Ingestion -> Analysis -> Storage
 
 This was due to how importing works. When you import python will run the module you imported before running the rest of the current program. So it would go into storage, then into analysis (on import) than into ingestion (on import) and recursively return back to storage with all the necessary metrics.
+
+##### Handling Acts that rely on The Processing of Previous Acts?
+By storing the processes of my acts in resources/acts, it added a new consideration. How should I deal with acts that rely on the data processing of a previous act? For example, if I had an Act A that took the dataframes passed to it and transformed them in a way that ACT B actually adds onto, what do I do with that? While the idea of just abstracting those processes and passing them into both acts was tempting, I remembered something more foundational. How my pipeline actually worked.
+
+Since I'm went with a per-run transaction philosophy, I had to make sure that my acts could be processed in those types of situations. There may be some slight overhead for the pipeline if no data exists in the database. However, for instances where an act was for some reason deleted, this would have to be handled cleanly.
+
+Therefore, it makes sense to have each act's logic be 'strictly' self-contained. So all the necessary processing must be in that given act.
 
 #### Pipeline Operations (The When)
 To make sure my pipeline would only process data when necessary I thought it was important to decide when to monitor or run. Originally, I thought about this in the form of two separate classes monitor and runner. However, as I continued to map out my design, I realized some problems with having discrete classes for them. The monitor checks that I was doing clashed with the error handling (transaction management, etc) I had already thought of implementing in the storage module. So I ended up not creating a definitive monitor class and adopted a more conservative philosophy when it came to data storage.
