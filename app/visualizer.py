@@ -3,7 +3,7 @@ import plotly.graph_objects as go
 import plotly.express as px
 import pandas as pd
 from app.simpleDB import SimpleDB
-from resources.acts import a1, a2
+from resources.acts import a1, a2, a3
 
 class TableWrapper:
     def __init__(self, tableData):
@@ -32,7 +32,9 @@ class Visualizer:
             "cumulative_revenue" : self.simpledb.get_table("BED_ACT1","cumulative_revenue"),
         }),
         #"act_2" : Act2({"geo_distributions" : self.simpledb.get_table("BED_ACT2","geo_distributions")})}
-        "act_2": a2.viz.Act2({"geo_distributions": gd})}
+        "act_2": a2.viz.Act2({"geo_distributions": gd}),
+        "act_3": a3.viz.Act3({}),
+        }
 
     def get_Acts(self):
         return self.acts

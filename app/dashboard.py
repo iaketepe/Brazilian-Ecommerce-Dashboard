@@ -122,7 +122,7 @@ def display_page(pathname):
     elif pathname == "/act-2":
         return act_2()
     elif pathname == "/act-3":
-        return act_2()
+        return act_3()
     else:
         return act_1()
 
@@ -281,7 +281,7 @@ def act_2():
                     "display": "flex",
                     "flexDirection": "row",
                     "gap" : "5px",
-                    "border-radius" : "100%"
+                    "borderRadius" : "100%"
                     #"height": "50%",
                     #"maxHeight": "50%",
                 })
@@ -290,7 +290,7 @@ def act_2():
                 "display": "flex",
                 "justifyContent": "center",
                 "width": "100%",
-                "padding-top" : "20px",
+                "paddingTop" : "20px",
                 #"maxWidth": "15%",
                 #"height": "100%",
             }),
@@ -344,7 +344,20 @@ def render_a2_graph(sellers_clicks, customers_clicks, reviews_clicks):
     return visualizer.acts["act_2"].sellers_distribution()
 
 
+def act_3():
+    layout = [
+        html.Div([
 
+        ],
+        style={
+            "display": "flex",
+            "flexDirection": "column",
+            "width" : "100%",
+            "height": "90vh",
+            #"divide" : "divi"
+        })
+    ]
+    return layout
 
 
 if __name__ == '__main__':
