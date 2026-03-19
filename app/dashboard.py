@@ -138,8 +138,8 @@ def act_1():
                     ),
                 ],
                     style={
-                        "grid-column": "1",
-                        "grid-row": "1",
+                        "gridColumn": "1",
+                        "gridRow": "1",
                         "height": "100%",
                     }),
 
@@ -152,42 +152,42 @@ def act_1():
                     ),
                 ],
                     style={
-                        "grid-column": "2",
-                        "grid-row": "1",
+                        "gridColumn": "2",
+                        "gridRow": "1",
                         "height": "100%",
                     }),
                 html.Div([
                     dcc.Interval(id='a1-ratio_pf', interval=10000, n_intervals=0),
                     dcc.Graph(
                         id='a1-ratio_pf',
-                        style={"width": "100%", "height": "100%", "aspect-ratio" : "1 / 1","overflow": "visible"},
+                        style={"width": "100%", "height": "100%", "aspectRatio" : "1 / 1","overflow": "visible"},
                         config={'staticPlot': True}
                     ),
-                ], style={"grid-column": "3", "grid-row": "1", "height": "100%", "width" : "100%"}),
+                ], style={"gridColumn": "3", "gridRow": "1", "height": "100%", "width" : "100%"}),
                 html.Div([
                     dcc.Interval(id='a1-ratio_sc', interval=10000, n_intervals=0),
                     dcc.Graph(
                         id='a1-ratio_sc',
-                        style={"width": "100%", "height": "100%", "aspect-ratio" : "1 / 1","overflow": "visible"},
+                        style={"width": "100%", "height": "100%", "aspectRatio" : "1 / 1","overflow": "visible"},
                         config={'staticPlot': True}
                     ),
-                ], style={"grid-column": "4", "grid-row": "1", "height": "100%", "width" : "100%"}),
+                ], style={"gridColumn": "4", "gridRow": "1", "height": "100%", "width" : "100%"}),
                 html.Div([
                     dcc.Interval(id='a1-ratio_cc', interval=10000, n_intervals=0),
                     dcc.Graph(
                         id='a1-ratio_cc',
-                        style={"width": "100%", "height": "100%", "aspect-ratio" : "1 / 1","overflow": "visible"},
+                        style={"width": "100%", "height": "100%", "aspectRatio" : "1 / 1","overflow": "visible"},
                         config={'staticPlot': True}
                     ),
-                ], style={"grid-column": "5", "grid-row": "1", "height": "100%", "width" : "100%"}),
+                ], style={"gridColumn": "5", "gridRow": "1", "height": "100%", "width" : "100%"}),
             ],
             style={
                 "display": "grid",
-                "grid-template-columns": "1.25fr 1fr 1fr 1fr 1fr",
-                "grid-gap": 10,
-                "align-items": "center",
-                "grid-auto-rows": "300px",
-                "overflow-x" : "auto"
+                "gridTemplateColumns": "1.25fr 1fr 1fr 1fr 1fr",
+                "gridGap": 10,
+                "alignItems": "center",
+                "gridAutoRows": "300px",
+                "overflowX" : "auto"
             }),
 
             html.Div([
@@ -195,22 +195,22 @@ def act_1():
                     dcc.Interval(id='a1-order_status', interval=10000, n_intervals=0),
                     dcc.Graph(
                         id='a1-order_status',
-                        style={"width": "100%", "height": "100%", "aspect-ratio": "1 / 1", "overflow": "visible"},
+                        style={"width": "100%", "height": "100%", "aspectRatio": "1 / 1", "overflow": "visible"},
                         config={'responsive': True}
                     ),
-                ], style={"grid-column": "1", "grid-row": "1", "height": "100%", "width": "100%"}),
+                ], style={"gridColumn": "1", "gridRow": "1", "height": "100%", "width": "100%"}),
                 html.Div([
                     dcc.Interval(id='a1-revenue_csum', interval=10000, n_intervals=0),
                     dcc.Graph(
                         id='a1-revenue_csum',
-                        style={"width": "100%", "height": "100%", "aspect-ratio" : "1 / 1","overflow": "visible"},
+                        style={"width": "100%", "height": "100%", "aspectRatio" : "1 / 1","overflow": "visible"},
                         config={'responsive': True}
                     ),
-                ], style={"grid-column": "2", "grid-row": "1", "height": "100%", "width" : "100%"}),
+                ], style={"gridColumn": "2", "gridRow": "1", "height": "100%", "width" : "100%"}),
             ], style={
                 "display": "grid",
-                "grid-template-columns": "1fr 1fr",  # independent two-column layout
-                "grid-gap": "10px",
+                "gridTemplateColumns": "1fr 1fr",  # independent two-column layout
+                "gridGap": "10px",
             })
     ])
 
