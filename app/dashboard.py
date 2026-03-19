@@ -2,6 +2,10 @@ from click import style
 from dash import Dash, html, dcc, Output, Input, State, callback_context
 from app.visualizer import visualizer
 from waitress import serve
+from dotenv import dotenv_values
+
+config = dotenv_values(".env")
+MODE = config.get("MODE")
 
 app = Dash(__name__, suppress_callback_exceptions=True)
 
@@ -36,6 +40,8 @@ app.layout = html.Div([
                 dcc.Link("Act 1", href="/act-1"),
                 html.Br(),
                 dcc.Link("Act 2", href="/act-2"),
+                html.Br(),
+                dcc.Link("Act 3", href="/act-3"),
             ],
             id="sidebar-elements"),
         ],
@@ -114,6 +120,8 @@ def display_page(pathname):
     if pathname == "/act-1":
         return act_1()
     elif pathname == "/act-2":
+        return act_2()
+    elif pathname == "/act-3":
         return act_2()
     else:
         return act_1()
@@ -337,15 +345,19 @@ def render_a2_graph(sellers_clicks, customers_clicks, reviews_clicks):
 
 
 
+
+
 if __name__ == '__main__':
-    _ = """serve(
-        app,
-        host='0.0.0.0',
-        port=8050,
-        threads=8
-    )"""
-    app.run(
-        debug=True,
-        host='0.0.0.0',
-        port=8050
-    )
+    if MODE == "main":
+       serve(
+            app,
+            host='0.0.0.0',
+            port=8050,
+            threads=8
+        )
+    else:
+        app.run(
+            debug=True,
+            host='0.0.0.0',
+            port=8050
+        )
