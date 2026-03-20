@@ -10,12 +10,9 @@ class Visualizer:
         #self.theme = theme
         self.simpledb = SimpleDB()
 
-        gd = pd.DataFrame(self.simpledb.get_table("BED_ACT2","geo_distributions"))
-        gd['review_score'] = gd['review_score'].astype(float)
-
-
-        self.acts = {"act_1" : a1.viz.Act1(self.simpledb),
-        "act_2": a2.viz.Act2({"geo_distributions": gd}),
+        self.acts = {
+            "act_1" : a1.viz.Act1(self.simpledb),
+            "act_2": a2.viz.Act2(self.simpledb),
         }
 
     def get_Acts(self):

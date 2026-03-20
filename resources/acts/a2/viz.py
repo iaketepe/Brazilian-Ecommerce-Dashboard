@@ -3,6 +3,7 @@ from importlib import resources
 import plotly.graph_objects as go
 import plotly.express as px
 import geopandas as gp
+import pandas as pd
 import json
 
 with resources.path("resources", "gadm41_BRA_1.json") as geofile:
@@ -12,13 +13,11 @@ with open(geofile, "r", encoding="utf-8") as f:
     geojson_dict = json.load(f)
 
 class Act2:
-    def __init__(self, actData):
-        # Promote each table to an attribute
-        for table_name, table in actData.items():
-            setattr(self, table_name, table)
+    def __init__(self, simpledb):
+        gd = pd.DataFrame(simpledb.get_table("BED_ACT2","geo_distributions"))
+        gd['review_score'] = gd['review_score'].astype(float)
 
-    def __getitem__(self, table_name):
-        return getattr(self, table_name)
+        self.geo_distributions = gd
 
     def sellers_distribution(self):
         fig = px.choropleth_mapbox(
