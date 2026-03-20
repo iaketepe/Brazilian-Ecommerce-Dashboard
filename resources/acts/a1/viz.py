@@ -1,15 +1,14 @@
 import plotly.graph_objects as go
 import plotly.express as px
+from app.utils.tablewrapper import TableWrapper
 import pandas as pd
 
 class Act1:
-    def __init__(self, actData):
-        # Promote each table to an attribute
-        for table_name, table in actData.items():
-            setattr(self, table_name, table)
-
-    def __getitem__(self, table_name):
-        return getattr(self, table_name)
+    def __init__(self, simpledb):
+        self.metrics = TableWrapper(simpledb.get_table("BED_ACT1","metrics"))
+        order_status_data = simpledb.get_table("BED_ACT1", "order_status")
+        self.order_status = pd.Series(order_status_data[0])
+        self.cumulative_revenue = simpledb.get_table("BED_ACT1","cumulative_revenue")
 
     def annual_revenue_approximated(self):
         fig = go.Figure(go.Indicator(
