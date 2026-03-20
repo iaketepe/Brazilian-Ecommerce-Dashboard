@@ -37,7 +37,7 @@ I ended up designing these parts into modules so that they would integrate into 
 ##### Ingestion
 For ingestion, I had to make sure that I grabbed all of the neccesary data to send to my analysis module. So I used kagglehub to source the data, and then I combined the files all into a list of dataframes. This makes it easier for my analysis module to focus on cleaning and processing directly.
 
-##### Analysis
+##### Processing (Analysis)
 For analysis, I had to make sure that I cleaned the data, obtained metrics from it and organized it into a simple data structure that could be sent to my storage module. Since there was a lot of data, I focused on cleaning on a 'needs to do' basis rather than a full clean. 
 
 In terms of the actual analysis, that can be seen in the 'ACT Analysis' segment below. Other than that, the only thing left I had to cover was organizing the data so it could be sent to storage. I thought of it in 3 segments:
@@ -115,7 +115,6 @@ So there wasn't much difference between the two. However, as I was developing, I
 ### Designing in Plotly Dash
 Something I've realized is the subtle difference between using Plotly Dash vs HTML/CSS. For the most part its similar, you still write with CSS rules and HTML elements with Python as an intermediary. However, since Dash has its own ways of handling web design, I had to take a step back from designing and focus on understanding Dash. Methods I would have quickly applied like page wrapping (for min-width clamps), or patterns for absolute-relative elements wouldn't work as easily as they did.
 
-### 
 
 ## ACT Analysis
 For my dashboard, I wanted to make my metrics make sense. So at each stage I asked a question to help improve focus across the acts.
