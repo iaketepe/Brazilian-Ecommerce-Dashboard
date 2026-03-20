@@ -13,6 +13,7 @@ class Visualizer:
         self.acts = {
             "act_1" : a1.viz.Act1(self.simpledb),
             "act_2": a2.viz.Act2(self.simpledb),
+            "act_3": a3.viz.Act3(self.simpledb),
         }
 
     def get_Acts(self):

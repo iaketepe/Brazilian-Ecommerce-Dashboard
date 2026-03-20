@@ -71,7 +71,7 @@ def setting_up_calculations(dfs):
 
     ml_data.drop(columns='product_category_name',inplace=True)
 
-    ml_data.rename(columns={"product_category_name_english" : "product_category_name"},inplace=True)
+    ml_data.rename(columns={"product_category_name_english" : "product_category"},inplace=True)
 
     return ml_data
 
@@ -80,7 +80,7 @@ def calculate(dfs):
 
     # 0 - number of orders per product category
 
-    orders_per_category = ml_data.groupby('product_category_name')['order_id'].count().reset_index()
+    orders_per_category = ml_data.groupby('product_category')['order_id'].count().reset_index()
     orders_per_category.rename(columns={'order_id': 'num_orders'}, inplace=True)
 
     # 1 - number of orders per category relative to total platform orders
@@ -92,46 +92,46 @@ def calculate(dfs):
     # 2 & 3 - TOP/WORST 3 sellers per category
 
     seller_category = (
-        ml_data.groupby(['product_category_name','seller_id'])
+        ml_data.groupby(['product_category','seller_id'])
         .agg(v=('review_score','count'), R=('review_score','mean'))
         .reset_index()
     )
 
     C = ml_data['review_score'].mean()
 
-    category_orders = ml_data.groupby('product_category_name')['order_id'].count().reset_index()
-    category_products = ml_data.groupby('product_category_name')['product_id'].nunique().reset_index()
-    category_stats = category_orders.merge(category_products, on='product_category_name')
+    category_orders = ml_data.groupby('product_category')['order_id'].count().reset_index()
+    category_products = ml_data.groupby('product_category')['product_id'].nunique().reset_index()
+    category_stats = category_orders.merge(category_products, on='product_category')
     category_stats['m'] = category_stats['order_id'] / category_stats['product_id']
 
-    seller_category = seller_category.merge(category_stats[['product_category_name','m']], on='product_category_name')
+    seller_category = seller_category.merge(category_stats[['product_category','m']], on='product_category')
 
     seller_category['bayes_score'] = (seller_category['v'] / (seller_category['v'] + seller_category['m'])) * seller_category['R'] \
                                       + (seller_category['m'] / (seller_category['v'] + seller_category['m'])) * C
 
     top_sellers = (
         seller_category
-        .sort_values(['product_category_name', 'bayes_score'], ascending=[True, False])
-        .groupby('product_category_name', group_keys=False)
+        .sort_values(['product_category', 'bayes_score'], ascending=[True, False])
+        .groupby('product_category', group_keys=False)
         .head(3)
         .to_dict(orient='records')
     )
 
     worst_sellers = (
         seller_category
-        .sort_values(['product_category_name', 'bayes_score'], ascending=[True, True])
-        .groupby('product_category_name', group_keys=False)
+        .sort_values(['product_category', 'bayes_score'], ascending=[True, True])
+        .groupby('product_category', group_keys=False)
         .head(3)
         .to_dict(orient='records')
     )
 
     # 4 - Distribution of review_scores for each product category
 
-    categories = ml_data['product_category_name'].unique()
+    categories = ml_data['product_category'].unique()
     reviews_per_category = []
     for category in categories:
         review_bins = (
-            ml_data[ml_data['product_category_name'] == category]['review_score']
+            ml_data[ml_data['product_category'] == category]['review_score']
             .value_counts()
             .reindex([1,2,3,4,5], fill_value=0)
             .rename(lambda x: str(x))
@@ -142,12 +142,12 @@ def calculate(dfs):
 
     # 5 - Histogram of average review_scores per seller in a category
 
-    seller_avg = ml_data.groupby(['product_category_name','seller_id'])['review_score'].mean().reset_index()
+    seller_avg = ml_data.groupby(['product_category','seller_id'])['review_score'].mean().reset_index()
 
     seller_reviews_per_category = []
     for category in categories:
         seller_review_bins = (
-            seller_avg[seller_avg['product_category_name'] == category]['review_score']
+            seller_avg[seller_avg['product_category'] == category]['review_score']
             .value_counts()
             .reindex([1,2,3,4,5], fill_value=0)
             .rename(lambda x: str(x))
@@ -158,7 +158,6 @@ def calculate(dfs):
 
     return {
         "orders_per_category" : orders_per_category,
-        "sellers_ranked" : seller_category.to_dict(orient='records'),
         "top_3_sellers" : top_sellers,
         "worst_3_sellers": worst_sellers,
         "reviews_per_category" : reviews_per_category,
