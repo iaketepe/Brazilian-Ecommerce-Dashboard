@@ -348,7 +348,7 @@ def act_3():
     layout = [
         html.Div([ #a3-base
             html.Div([ #a3-selection
-                html.Div([ #a3-product_category_title
+                html.Div([ #a3-selection-product_category_card
                     html.H2("P_Name"),
                     html.Label(
                         "Product Category"
@@ -362,11 +362,24 @@ def act_3():
                     "align-items": "center",
                     #"height" : "30%"
                 }),
-                html.Div([  # a3-product_category_title
+                html.Div([  # a3-selection-query-options
+                    html.Div([
 
+                    ],
+                    style={
+                        "border": "1px solid black",
+                    }),
+                    html.Div([
+
+                    ],
+                    style={
+
+                    })
                 ],
                 style={
                     "border": "1px solid black",
+                    "display": "grid",
+                    "gridTemplateRows": ".1fr 1fr",
                     # "display" : "flex",
                     # "height" : "30%"
                 }),
@@ -383,17 +396,30 @@ def act_3():
             html.Div([ #a3-analytics
                 html.Div([ #a3-analytics-tophalf
                     html.Div([ #a3-analytics-tophalf-left
+                        html.Div([
 
+                        ],
+                        style={
+                            "border": "1px solid black",
+                        }),
+                        html.Div([
+
+                        ],
+                        style={
+                            "border": "1px solid black",
+                        })
                     ],
                         style={
                             "border": "1px solid black",
+                            "display": "grid",
+                            "gridTemplateColumns": "1fr 1fr",
                         }),
                     html.Div([ #a3-sellers_ranked
                         html.Div([
 
                         ],
                         style={
-                            "border": "1px solid black",
+
                         }),
                         html.Div([
 
