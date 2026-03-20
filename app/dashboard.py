@@ -346,14 +346,104 @@ def render_a2_graph(sellers_clicks, customers_clicks, reviews_clicks):
 
 def act_3():
     layout = [
-        html.Div([
+        html.Div([ #a3-base
+            html.Div([ #a3-selection
+                html.Div([ #a3-product_category_title
+                    html.H2("P_Name"),
+                    html.Label(
+                        "Product Category"
+                    ),
+                ],
+                style={
+                    "border": "1px solid black",
+                    "display" : "flex",
+                    "flexDirection": "column",
+                    "justify-content": "center",
+                    "align-items": "center",
+                    #"height" : "30%"
+                }),
+                html.Div([  # a3-product_category_title
 
+                ],
+                style={
+                    "border": "1px solid black",
+                    # "display" : "flex",
+                    # "height" : "30%"
+                }),
+
+            ],
+            style={
+                    "border" : "1px solid black",
+                    "display" : "grid",
+                    "gridTemplateRows" : ".3fr 1fr",
+                    "width" : "20%",
+                    "padding" : "20px",
+                    "gap" : "20px",
+            }),
+            html.Div([ #a3-analytics
+                html.Div([ #a3-analytics-tophalf
+                    html.Div([ #a3-analytics-tophalf-left
+
+                    ],
+                        style={
+                            "border": "1px solid black",
+                        }),
+                    html.Div([ #a3-sellers_ranked
+                        html.Div([
+
+                        ],
+                        style={
+                            "border": "1px solid black",
+                        }),
+                        html.Div([
+
+                        ],
+                        style={
+                            "border": "1px solid black",
+                        })
+                    ],
+                        style={
+                            "display": "grid",
+                            "gridTemplateRows": "1fr 1fr",  # independent two-column layout
+                        }),
+                ],
+                style={ #
+                    "display": "grid",
+                    "gridTemplateColumns": ".8fr 1.2fr",  # independent two-column layout
+                    "border": "1px solid black",
+                    "height" : "40%",
+                }),
+                html.Div([ # a3-analytics-bottomhalf
+                    html.Div([
+
+                    ],
+                    style={
+                        "border": "1px solid black",
+                    }),
+                    html.Div([
+
+                    ],
+                    style={
+                        "border": "1px solid black",
+                    }),
+                ],
+                    style={
+                        "display" : "grid",
+                        "gridTemplateColumns": "1fr 1fr",  # independent two-column layout
+                        "height" : "60%",
+                    }),
+            ],
+            style={ # a3-analytics
+                    "display" : "flex",
+                    "flexDirection": "column",
+                    "width" : "80%",
+            }),
         ],
-        style={
+        style={ #a3-base
             "display": "flex",
-            "flexDirection": "column",
             "width" : "100%",
             "height": "90vh",
+            "flexBasis" : "1/3 2/3",
             #"divide" : "divi"
         })
     ]
