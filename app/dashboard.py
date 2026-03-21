@@ -157,7 +157,6 @@ def act_1():
                         "height": "100%",
                     }),
                 html.Div([
-                    dcc.Interval(id='a1-ratio_pf', interval=10000, n_intervals=0),
                     dcc.Graph(
                         id='a1-ratio_pf',
                         style={"width": "100%", "height": "100%", "aspectRatio" : "1 / 1","overflow": "visible"},
@@ -165,7 +164,6 @@ def act_1():
                     ),
                 ], style={"gridColumn": "3", "gridRow": "1", "height": "100%", "width" : "100%"}),
                 html.Div([
-                    dcc.Interval(id='a1-ratio_sc', interval=10000, n_intervals=0),
                     dcc.Graph(
                         id='a1-ratio_sc',
                         style={"width": "100%", "height": "100%", "aspectRatio" : "1 / 1","overflow": "visible"},
@@ -173,7 +171,6 @@ def act_1():
                     ),
                 ], style={"gridColumn": "4", "gridRow": "1", "height": "100%", "width" : "100%"}),
                 html.Div([
-                    dcc.Interval(id='a1-ratio_cc', interval=10000, n_intervals=0),
                     dcc.Graph(
                         id='a1-ratio_cc',
                         style={"width": "100%", "height": "100%", "aspectRatio" : "1 / 1","overflow": "visible"},
@@ -192,7 +189,6 @@ def act_1():
 
             html.Div([
                 html.Div([
-                    dcc.Interval(id='a1-order_status', interval=10000, n_intervals=0),
                     dcc.Graph(
                         id='a1-order_status',
                         style={"width": "100%", "height": "100%", "aspectRatio": "1 / 1", "overflow": "visible"},
@@ -200,7 +196,6 @@ def act_1():
                     ),
                 ], style={"gridColumn": "1", "gridRow": "1", "height": "100%", "width": "100%"}),
                 html.Div([
-                    dcc.Interval(id='a1-revenue_csum', interval=10000, n_intervals=0),
                     dcc.Graph(
                         id='a1-revenue_csum',
                         style={"width": "100%", "height": "100%", "aspectRatio" : "1 / 1","overflow": "visible"},
@@ -218,49 +213,49 @@ def act_1():
 
 @app.callback(
     Output('a1-review_score', 'figure'),
-    Input('a1-review_intervals','n_intervals'),
+    Input('a1-review_score','id'),
 )
 def review_score(_):
     return visualizer.acts["act_1"].review_score()
 
 @app.callback(
     Output('a1-annual_revenue', 'figure'),
-    Input('a1-annual_revenue_intervals','n_intervals')
+    Input('a1-annual_revenue','id')
 )
 def annual_revenue_approximated(_):
   return visualizer.acts["act_1"].annual_revenue_approximated()
 
 @app.callback(
     Output('a1-ratio_pf', 'figure'),
-    Input('a1-ratio_pf','n_intervals')
+    Input('a1-ratio_pf','id')
 )
 def createRatioInstallmentsInFull(_):
     return visualizer.acts["act_1"].createRatioInstallmentsInFull()
 
 @app.callback(
     Output('a1-ratio_sc', 'figure'),
-    Input('a1-ratio_sc', 'n_intervals')
+    Input('a1-ratio_sc', 'id')
 )
 def createRatioSellerCarrier(_):
     return visualizer.acts["act_1"].createRatioSellerCarrier()
 
 @app.callback(
     Output('a1-ratio_cc', 'figure'),
-    Input('a1-ratio_cc', 'n_intervals')
+    Input('a1-ratio_cc', 'id')
 )
 def createRatioCarrierCustomer(_):
     return visualizer.acts["act_1"].createRatioCarrierCustomer()
 
 @app.callback(
     Output('a1-order_status', 'figure'),
-    Input('a1-order_status', 'n_intervals')
+    Input('a1-order_status', 'id')
 )
 def distribution_order_status(_):
     return visualizer.acts["act_1"].distribution_order_status()
 
 @app.callback(
     Output('a1-revenue_csum', 'figure'),
-    Input('a1-revenue_csum', 'n_intervals')
+    Input('a1-revenue_csum', 'id')
 )
 def monthly_annual_revenue_approximated(_):
     return visualizer.acts["act_1"].monthly_annual_revenue_approximated()
@@ -349,7 +344,7 @@ def act_3():
         html.Div([ #a3-base
             html.Div([ #a3-selection
                 html.Div([ #a3-selection-product_category_card
-                    html.H2("P_Name"),
+                    html.H2("Name", id="a3-product_category"),
                     html.Label(
                         "Product Category"
                     ),
@@ -475,6 +470,12 @@ def act_3():
     ]
     return layout
 
+@app.callback(
+    Output('a3-product_category', 'figure'),
+    Input('a3-review_intervals','n_intervals'),
+)
+def product_name(_):
+    return visualizer.acts["act_3"].get_category()
 
 if __name__ == '__main__':
     if MODE == "main":
