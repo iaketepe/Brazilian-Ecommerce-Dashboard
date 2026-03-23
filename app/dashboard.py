@@ -353,20 +353,21 @@ def act_3():
                     "border": "1px solid black",
                     "display" : "flex",
                     "flexDirection": "column",
-                    "justify-content": "center",
-                    "align-items": "center",
+                    "justifyContent": "center",
+                    "alignItems": "center",
                     #"height" : "30%"
                 }),
-                html.Div([  # a3-selection-query-options
+                html.Div([  #a3-selection-query-options
                     html.Div([
 
                     ],
                     style={
                         "border": "1px solid black",
                     }),
-                    html.Div([
+                    dcc.Dropdown([ #a3-selection-product_categories
 
                     ],
+                    id="a3-product_categories",
                     style={
 
                     })
@@ -392,16 +393,20 @@ def act_3():
                 html.Div([ #a3-analytics-tophalf
                     html.Div([ #a3-analytics-tophalf-left
                         html.Div([
-
+                            dcc.Graph(
+                                id='a3-orders_per_category',
+                                config={'staticPlot': True}
+                            ),
                         ],
                         style={
-                            "border": "1px solid black",
                         }),
                         html.Div([
-
+                            dcc.Graph(
+                                id='a3-platform_share_per_category',
+                                config={'staticPlot': True}
+                            ),
                         ],
                         style={
-                            "border": "1px solid black",
                         })
                     ],
                         style={
@@ -409,15 +414,25 @@ def act_3():
                             "display": "grid",
                             "gridTemplateColumns": "1fr 1fr",
                         }),
-                    html.Div([ #a3-sellers_ranked
+                    html.Div([ #a3-analytics-tophalf-right
                         html.Div([
+                            html.Label("Top 3 Sellers",style={"display":"flex"}),
+                            html.Div([
 
+                            ],
+                            id='a3-top_sellers',
+                            )
                         ],
                         style={
 
                         }),
                         html.Div([
+                            html.Label("Worst 3 Sellers"),
+                            html.Div([
 
+                            ],
+                            id='a3-worst_sellers',
+                            )
                         ],
                         style={
                             "border": "1px solid black",
@@ -436,13 +451,20 @@ def act_3():
                 }),
                 html.Div([ # a3-analytics-bottomhalf
                     html.Div([
-
+                        dcc.Graph(
+                            id="a3-reviews_per_category",
+                            config={'staticPlot': True}
+                        ),
                     ],
                     style={
                         "border": "1px solid black",
                     }),
                     html.Div([
-
+                        dcc.Graph(
+                            id="a3-seller_reviews_per_category",
+                            style={"overflow": "visible"},
+                            config={'staticPlot': True}
+                        ),
                     ],
                     style={
                         "border": "1px solid black",
@@ -471,11 +493,46 @@ def act_3():
     return layout
 
 @app.callback(
-    Output('a3-product_category', 'figure'),
-    Input('a3-review_intervals','n_intervals'),
+    Output('a3-product_category', 'children'),
+    Output('a3-orders_per_category', 'figure'),
+    Output('a3-platform_share_per_category', 'figure'),
+    Output('a3-reviews_per_category', 'figure'),
+    Output('a3-seller_reviews_per_category', 'figure'),
+    Output('a3-top_sellers', 'children'),
+    Output('a3-worst_sellers', 'children'),
+    Input('a3-product_categories','value'),
 )
-def product_name(_):
+def update_act3(category):
+    visualizer.acts["act_3"].update(category)
+    return get_category(), get_orders_per_category(), get_platform_share_per_category(), get_reviews_per_category(), get_seller_reviews_per_category(), get_top_3_sellers(), get_worst_3_sellers()
+
+@app.callback(
+    Output('a3-product_categories', 'options'),
+    Input('a3-product_categories','id'),
+)
+def get_categories(_):
+    return visualizer.acts["act_3"].get_categories()
+
+def get_category():
     return visualizer.acts["act_3"].get_category()
+
+def get_orders_per_category():
+    return visualizer.acts["act_3"].get_orders_per_category()
+
+def get_platform_share_per_category():
+    return visualizer.acts["act_3"].get_platform_share_per_category()
+
+def get_reviews_per_category():
+    return visualizer.acts["act_3"].get_reviews_per_category()
+
+def get_seller_reviews_per_category():
+    return visualizer.acts["act_3"].get_seller_reviews_per_category()
+
+def get_top_3_sellers():
+    return visualizer.acts["act_3"].get_top_3_sellers()
+
+def get_worst_3_sellers():
+    return visualizer.acts["act_3"].get_worst_3_sellers()
 
 if __name__ == '__main__':
     if MODE == "main":
