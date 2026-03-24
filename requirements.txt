@@ -6,3 +6,5 @@ psycopg
 python-dotenv
 waitress
 geopandas
+dash-ag-grid
+dash-mantine-components

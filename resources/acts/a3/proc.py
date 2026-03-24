@@ -158,6 +158,7 @@ def calculate(dfs):
 
     return {
         "orders_per_category" : orders_per_category,
+        "sellers_ranked" : seller_category.to_dict(orient='records'),
         "top_3_sellers" : top_sellers,
         "worst_3_sellers": worst_sellers,
         "reviews_per_category" : reviews_per_category,

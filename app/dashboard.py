@@ -3,6 +3,8 @@ from dash import Dash, html, dcc, Output, Input, State, callback_context
 from app.visualizer import visualizer
 from waitress import serve
 from dotenv import dotenv_values
+import dash_ag_grid as dag
+import dash_mantine_components as dmc
 
 config = dotenv_values(".env")
 MODE = config.get("MODE")
@@ -90,6 +92,7 @@ style={
     #"fontFamily": '"Source Sans", sans-serif'
 })
 
+app.layout = dmc.MantineProvider(children=app.layout)
 
 @app.callback(
     Output("sidebar","style"),
@@ -344,36 +347,36 @@ def act_3():
         html.Div([ #a3-base
             html.Div([ #a3-selection
                 html.Div([ #a3-selection-product_category_card
-                    html.H2("Name", id="a3-product_category"),
+                    html.Label("Name", id="a3-product_category", style={"width": "100%", "fontSize": "24px", "fontWeight": "bold"}),
                     html.Label(
                         "Product Category"
-                    ),
+                    )
                 ],
                 style={
                     "border": "1px solid black",
-                    "display" : "flex",
+                    "textAlign": "center",
+                    "display": "flex",
                     "flexDirection": "column",
                     "justifyContent": "center",
-                    "alignItems": "center",
-                    #"height" : "30%"
+                    "overflowX" : "auto",
+                    "gap" : "20px",
+                    "height": "30%",
                 }),
                 html.Div([  #a3-selection-query-options
                     html.Div([
 
                     ],
                     style={
-                        "border": "1px solid black",
                     }),
-                    dcc.Dropdown([ #a3-selection-product_categories
-
-                    ],
+                    dmc.Select(
                     id="a3-product_categories",
+                    data=[],
+                    searchable=True,
+                    maxDropdownHeight=400,
                     style={
-
                     })
                 ],
                 style={
-                    "border": "1px solid black",
                     "display": "grid",
                     "gridTemplateRows": ".1fr 1fr",
                     # "display" : "flex",
@@ -382,10 +385,10 @@ def act_3():
 
             ],
             style={
-                    "border" : "1px solid black",
-                    "display" : "grid",
-                    "gridTemplateRows" : ".3fr 1fr",
-                    "width" : "20%",
+                    "display" : "flex",
+                    "flexDirection": "column",
+                    "minWidth": "25%",
+                    "width": "25%",
                     "padding" : "20px",
                     "gap" : "20px",
             }),
@@ -395,98 +398,95 @@ def act_3():
                         html.Div([
                             dcc.Graph(
                                 id='a3-orders_per_category',
-                                config={'staticPlot': True}
+                                config={'staticPlot': True},
+                                style={"width": "100%", "height": "100%"}
                             ),
-                        ],
-                        style={
-                        }),
+                        ],style = {"flex": "1 1 0"}),
                         html.Div([
                             dcc.Graph(
                                 id='a3-platform_share_per_category',
-                                config={'staticPlot': True}
+                                config={'staticPlot': True},
+                                style={"width": "100%", "height": "100%"}
                             ),
-                        ],
-                        style={
-                        })
+                        ], style={"flex": "1 1 0"})
                     ],
                         style={
-                            "border": "1px solid black",
-                            "display": "grid",
-                            "gridTemplateColumns": "1fr 1fr",
+                            "display": "flex",
+                            "overflowX": "auto",
+                            "width": "40%",
+                            "flex": "1 1 0"
                         }),
                     html.Div([ #a3-analytics-tophalf-right
-                        html.Div([
-                            html.Label("Top 3 Sellers",style={"display":"flex"}),
-                            html.Div([
-
-                            ],
-                            id='a3-top_sellers',
-                            )
-                        ],
-                        style={
-
-                        }),
-                        html.Div([
-                            html.Label("Worst 3 Sellers"),
-                            html.Div([
-
-                            ],
-                            id='a3-worst_sellers',
-                            )
-                        ],
-                        style={
-                            "border": "1px solid black",
-                        })
+                        html.Div([  # Top 3 Sellers
+                            html.Label("Top 3 Sellers", style={"fontWeight": "bold"}),
+                            html.Div([  # AgGrid container
+                                dag.AgGrid(
+                                    id="a3-top_sellers",
+                                    rowData=[],
+                                    columnSize="responsiveSizeToFit",
+                                    style={"width": "100%", "height": "100%"}
+                                )
+                            ], style={"flex": "1 1 0"})
+                        ], style={"display": "flex", "flexDirection": "column", "flex": "1 1 0"}),
+                        html.Div([  # Worst 3 Sellers
+                            html.Label("Worst 3 Sellers", style={"fontWeight": "bold"}),
+                            html.Div([  # AgGrid container
+                                dag.AgGrid(
+                                    id="a3-worst_sellers",
+                                    rowData=[],
+                                    columnSize="responsiveSizeToFit",
+                                    style={"width": "100%", "height": "100%"},
+                                )
+                            ], style={"flex": "1 1 0"})
+                        ], style={"display": "flex", "flexDirection": "column", "flex": "1 1 0"}),
                     ],
-                        style={
-                            "display": "grid",
-                            "gridTemplateRows": "1fr 1fr",  # independent two-column layout
-                        }),
+                    style={
+                        "display": "flex",
+                        "flexDirection": "column",
+                        "width": "60%",
+                        "height": "100%",
+                        "overflowX": "auto",
+                    }),
                 ],
-                style={ #
-                    "display": "grid",
-                    "gridTemplateColumns": ".8fr 1.2fr",  # independent two-column layout
-                    "border": "1px solid black",
-                    "height" : "40%",
+                style={ #a3-analytics-tophalf
+                    "display": "flex",
+                    "width": "100%",
+                    "height": "100%",
+                    "overflow": "auto",
                 }),
                 html.Div([ # a3-analytics-bottomhalf
                     html.Div([
                         dcc.Graph(
                             id="a3-reviews_per_category",
-                            config={'staticPlot': True}
+                            style={"width": "100%", "height": "100%"},
+                            config={'responsive': True}
                         ),
-                    ],
-                    style={
-                        "border": "1px solid black",
-                    }),
+                    ], style={"gridColumn": "1", "gridRow": "1", "height": "100%", "width": "100%", "overflow": "auto"}),
                     html.Div([
                         dcc.Graph(
                             id="a3-seller_reviews_per_category",
-                            style={"overflow": "visible"},
-                            config={'staticPlot': True}
+                            style={"width": "100%", "height": "100%"},
+                            config={'responsive': True}
                         ),
-                    ],
-                    style={
-                        "border": "1px solid black",
-                    }),
+                    ], style={"gridColumn": "2", "gridRow": "1", "height": "100%", "width": "100%", "overflow": "auto"}),
                 ],
                     style={
                         "display" : "grid",
                         "gridTemplateColumns": "1fr 1fr",  # independent two-column layout
-                        "height" : "60%",
+                        "overflow": "auto",
                     }),
             ],
             style={ # a3-analytics
-                    "display" : "flex",
-                    "flexDirection": "column",
-                    "width" : "80%",
+                "display": "grid",
+                "gridTemplateRows": "40% 60%",
+                "width": "80%",
+                "height": "100%",
             }),
         ],
         style={ #a3-base
             "display": "flex",
             "width" : "100%",
             "height": "90vh",
-            "flexBasis" : "1/3 2/3",
             #"divide" : "divi"
         })
     ]
@@ -498,16 +498,20 @@ def act_3():
     Output('a3-platform_share_per_category', 'figure'),
     Output('a3-reviews_per_category', 'figure'),
     Output('a3-seller_reviews_per_category', 'figure'),
-    Output('a3-top_sellers', 'children'),
-    Output('a3-worst_sellers', 'children'),
+    Output("a3-top_sellers", "rowData"),
+    Output("a3-top_sellers", "columnDefs"),
+    Output("a3-worst_sellers", "rowData"),
+    Output("a3-worst_sellers", "columnDefs"),
     Input('a3-product_categories','value'),
 )
 def update_act3(category):
     visualizer.acts["act_3"].update(category)
-    return get_category(), get_orders_per_category(), get_platform_share_per_category(), get_reviews_per_category(), get_seller_reviews_per_category(), get_top_3_sellers(), get_worst_3_sellers()
+    top_3_row_data, top_3_columns_def = get_top_3_sellers()
+    worst_3_row_data, worst_3_columns_def = get_worst_3_sellers()
+    return get_category(), get_orders_per_category(), get_platform_share_per_category(), get_reviews_per_category(), get_seller_reviews_per_category(), top_3_row_data, top_3_columns_def, worst_3_row_data, worst_3_columns_def
 
 @app.callback(
-    Output('a3-product_categories', 'options'),
+    Output('a3-product_categories', 'data'), #Output('a3-product_categories', 'options'),
     Input('a3-product_categories','id'),
 )
 def get_categories(_):
@@ -529,7 +533,8 @@ def get_seller_reviews_per_category():
     return visualizer.acts["act_3"].get_seller_reviews_per_category()
 
 def get_top_3_sellers():
-    return visualizer.acts["act_3"].get_top_3_sellers()
+    row_data, column_defs = visualizer.acts["act_3"].get_top_3_sellers()
+    return row_data, column_defs
 
 def get_worst_3_sellers():
     return visualizer.acts["act_3"].get_worst_3_sellers()
