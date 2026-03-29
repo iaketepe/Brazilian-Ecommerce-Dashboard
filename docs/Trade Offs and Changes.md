@@ -122,6 +122,7 @@ For my dashboard, I wanted to make my metrics make sense. So at each stage I ask
 Here are the questions:
 - How are we doing?
 - Why are things as they are?
+- 
 
 
 ### ACT 1
@@ -185,3 +186,27 @@ The reasoning for this metric is similar to the previous one. We can understand 
 It's easy to look at an e-commerce platform as just one thing. Sometimes, though its better to look at it as a group of state-wide selling systems. Each system adheres to the platform's values flexibly, with their own logistics, sellers, etc. So, if we focus on the average review scores for the sellers in those states, it may give us a view into how well each 'system' is doing.
 
 To analyze average review scores by state, I first merged order review scores with their corresponding orders and linked each order to its seller and the seller’s state. For orders with multiple sellers, I aggregated to select a single seller and state per order. I then calculated the average review score for each seller state, ensuring that all states were included by merging with a reference table and filling missing values with 0. Finally, I combined this with the seller and customer geographic distributions to create a state-level dataset containing seller counts, customer counts, and average review scores, ready for visualization on the dashboard.
+
+### ACT 3
+The question, "Why are things as they are" is much deeper than I thought. In Act 2, I tried to approach this from a external, geographical context. However, I never ended up looking at it from a more internal one. This act is more focused on that. By analyzing data through the lense of  product categories, I can understand the 'Why' on a deeper level.
+
+#### Number of Orders
+To understand demand across the platform, I calculated the number of orders per product category. This was done by grouping the dataset by product_category and counting the number of associated order_id values. This metric serves as a baseline indicator of category performance, highlighting which categories drive the most activity on the platform. It also provides useful context when compared with revenue-based metrics from Act 1, helping differentiate between high-volume and high-value categories.
+
+#### Platform Order Share
+While raw order counts are useful, it's difficult to understand the impact a given category has immediately. To address this, I calculated a proportion for each category. This was done by dividing the number of orders in each category by the total number of orders across the platform. It provides a clearer understanding of category dominance and platform concentration.
+
+#### Best and Worst 3 Sellers
+To evaluate seller performance more accurately, I implemented a Bayesian-adjusted scoring system rather than relying on simple averages. First, I grouped the data by both product_category and seller_id, calculating the number of reviews and the average review score for each seller. I then computed a global average review score across the entire dataset and introduced a category-specific weighting factor to account for differences in review volume.
+
+Using these components, I calculated a Bayesian score that balances each seller’s individual performance with the overall platform average. This approach reduces the impact of low-sample-size bias and produces more stable rankings. Based on this score, I identified the top 3 and worst 3 sellers within each category. This provides insight into both high-performing sellers who drive positive customer experiences and underperforming sellers who may introduce risk to the platform.
+
+#### Distribution of Product Review Scores
+To better understand customer sentiment, I analyzed the distribution of review scores within each product category. For each category, I counted the number of reviews corresponding to each score from 1 to 5. This reveals the full shape of a categories customer feedback. By examining these distributions, it becomes possible to identify whether a category meeting satisfaction expectations.
+
+#### Distribution of Seller Average Product Review Scores
+In addition to analyzing individual reviews, I examined the distribution of average review scores at the seller level within each category. I first calculated the mean review score for each seller, then grouped these averages into discrete bins between 1 to 5. This provides insight into how seller performance is distributed across a platform's category.
+
+This metric helps determine whether strong performance is widespread or concentrated among a small number of sellers. When cross-referenced with the previous distribution, it becomes a powerful tool for observing blindspots in platform market trends. For example, if a category had very low levels of customer satisfaction. However, most sellers provided high levels of satisfaction, then it may allow us to think about questioning our recommendations systems or other policies.
+
+NOTE: When it came to visualizing this metric. Dash had a bit of trouble displaying data at the ends of the range (1, 5). So I had to expand the range to make the entire result visible.
