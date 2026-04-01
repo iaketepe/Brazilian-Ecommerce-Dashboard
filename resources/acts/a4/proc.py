@@ -6,7 +6,7 @@ from sklearn.model_selection import train_test_split
 from sklearn.linear_model import LinearRegression
 from sklearn.metrics import mean_absolute_error, mean_squared_error, r2_score
 from tensorflow import keras
-from tensorflow.keras import layers
+from tensorflow.keras import layers, Sequential
 
 def initializing_dataset(dfs):
     ### Setting Up
@@ -189,7 +189,7 @@ def running_LR(X_train, X_test, y_train, y_test):
     return model
 
 def running_NN(X_train, X_test, y_train, y_test):
-    model = keras.Sequential([
+    model = Sequential([
         layers.Dense(64, activation='relu', input_shape=[X_train.shape[1]]),
         layers.Dense(32, activation='relu'),
         layers.Dense(1)
@@ -278,12 +278,12 @@ def calculate(dfs):
     top_features = feature_importance.head(10).to_dict(orient="records")
 
     # Use a small background dataset for reference
-    X_background = X_train.sample(100, random_state=42).values
+    X_background = X_train.sample(20, random_state=42).values
 
     explainer = shap.GradientExplainer(model, X_background)
 
     # Compute SHAP values on a small test subset
-    X_eval = X_test.sample(100, random_state=42).values
+    X_eval = X_test.sample(20, random_state=42).values
     shap_values = explainer.shap_values(X_eval)
 
     shap_values_array = np.squeeze(shap_values)  # shape: (n_eval_samples, n_features)
