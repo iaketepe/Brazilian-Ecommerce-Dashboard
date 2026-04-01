@@ -23,6 +23,12 @@ class SimpleDB:
     def is_connected(self):
         return self._conn is not None and self._cur is not None
 
+    def safe_execute(self, query):
+        if self._cur is not None:
+            self._cur.close()
+        self._cur = self._conn.cursor()
+        self._cur.execute(query)
+
     def select_exists(self, schema_name, table_name, column_name=None):
         if column_name is None:
             query = sql.SQL("""
@@ -50,7 +56,7 @@ class SimpleDB:
                 table=sql.Literal(table_name),
                 column=sql.Literal(column_name)
             )
-        self._cur.execute(query)
+        self.safe_execute(query)
         result = self._cur.fetchone()
         return result['exists']
 
@@ -63,7 +69,7 @@ class SimpleDB:
             schema=sql.Identifier(schema_name),
             table=sql.Identifier(table_name)
             )
-            self._cur.execute(query)
+            self.safe_execute(query)
             table = self._cur.fetchall()
             #print(f"Table: {table}")
             return table
@@ -81,16 +87,10 @@ class SimpleDB:
             column=sql.Identifier(column_name),
             item=sql.Literal(item_name),
             )
-            self._cur.execute(query)
+            self.safe_execute(query)
             table = self._cur.fetchall()
             return table
         else:
             print("Cannot find table")
 
-_  = """simpleDB = SimpleDB()
-table = simpleDB.get_table("TEST_ACT1","metrics")
-print(type(table))
-print(type(table[0]))
-print(type(table[0]['name']))
-print(table[0]['name'])"""
 
