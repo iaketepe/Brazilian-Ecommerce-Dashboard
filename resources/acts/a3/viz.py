@@ -6,13 +6,13 @@ import dash_ag_grid as dag
 
 
 class Act3:
-    def __init__(self, simpledb, category=None):
+    def __init__(self, simpledb):
         self.simpledb = simpledb
         self.categories = sorted(pd.DataFrame(self.simpledb.get_table("TEST_ACT3", "orders_per_category"))['product_category'].unique().tolist())
 
-        self.update(category)
+        self.update()
 
-    def update(self, category):
+    def update(self, category=None):
         self.category = category or self.categories[0]
 
         self.orders_per_category = self.simpledb.get_filtered_table("TEST_ACT3", "orders_per_category", "product_category", self.category)[0]

@@ -351,7 +351,7 @@ def act_3():
         html.Div([ #a3-base
             html.Div([ #a3-selection
                 html.Div([ #a3-selection-product_category_card
-                    html.Label("Name", id="a3-product_category", style={"width": "100%", "fontSize": "24px", "fontWeight": "bold"}),
+                    html.Label("-", id="a3-product_category", style={"width": "100%", "fontSize": "24px", "fontWeight": "bold"}),
                     html.Label(
                         "Product Category"
                     )
