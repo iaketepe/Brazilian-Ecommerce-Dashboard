@@ -1,0 +1,10 @@
+kagglehub
+pandas
+dash
+plotly
+psycopg
+python-dotenv
+waitress
+geopandas
+dash-ag-grid
+dash-mantine-components
