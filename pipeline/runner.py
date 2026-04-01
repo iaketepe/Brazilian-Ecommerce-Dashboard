@@ -22,7 +22,7 @@ class Runner:
         try:
             with self.db._conn.transaction():
                 schema_base = self.assign_base()
-                act_names = ['ACT1','ACT2','ACT3']
+                act_names = ['ACT1','ACT2','ACT3','ACT4']
                 for act_name in act_names:
                     storage.store(self.db, schema_base, act_name)
             status = "SUCCESS"

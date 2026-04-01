@@ -210,3 +210,5 @@ In addition to analyzing individual reviews, I examined the distribution of aver
 This metric helps determine whether strong performance is widespread or concentrated among a small number of sellers. When cross-referenced with the previous distribution, it becomes a powerful tool for observing blindspots in platform market trends. For example, if a category had very low levels of customer satisfaction. However, most sellers provided high levels of satisfaction, then it may allow us to think about questioning our recommendations systems or other policies.
 
 NOTE: When it came to visualizing this metric. Dash had a bit of trouble displaying data at the ends of the range (1, 5). So I had to expand the range to make the entire result visible.
+
+### ACT 4

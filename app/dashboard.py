@@ -44,6 +44,8 @@ app.layout = html.Div([
                 dcc.Link("Act 2", href="/act-2"),
                 html.Br(),
                 dcc.Link("Act 3", href="/act-3"),
+                html.Br(),
+                dcc.Link("Act 4", href="/act-4"),
             ],
             id="sidebar-elements"),
         ],
@@ -126,6 +128,8 @@ def display_page(pathname):
         return act_2()
     elif pathname == "/act-3":
         return act_3()
+    elif pathname == "/act-4":
+        return act_4()
     else:
         return act_1()
 
@@ -498,10 +502,10 @@ def act_3():
     Output('a3-platform_share_per_category', 'figure'),
     Output('a3-reviews_per_category', 'figure'),
     Output('a3-seller_reviews_per_category', 'figure'),
-    Output("a3-top_sellers", "rowData"),
-    Output("a3-top_sellers", "columnDefs"),
-    Output("a3-worst_sellers", "rowData"),
-    Output("a3-worst_sellers", "columnDefs"),
+    Output('a3-top_sellers', 'rowData'),
+    Output('a3-top_sellers', 'columnDefs'),
+    Output('a3-worst_sellers', 'rowData'),
+    Output('a3-worst_sellers', 'columnDefs'),
     Input('a3-product_categories','value'),
 )
 def update_act3(category):
@@ -538,6 +542,102 @@ def get_top_3_sellers():
 
 def get_worst_3_sellers():
     return visualizer.acts["act_3"].get_worst_3_sellers()
+
+
+def act_4():
+    layout = [
+        html.Div([ #a4-base
+            html.Div([ #a4-model_selection
+                dmc.Select(
+                    id="a4-model_selection",
+                    data=[],
+                    searchable=True,
+                    maxDropdownHeight=400,
+                    style={
+                    })
+            ],
+            style={
+                "border": "1px solid black",
+                "display": "flex",
+                "flexDirection": "column",
+                "minWidth": "25%",
+                "width": "25%",
+                "padding": "20px",
+                "gap": "20px",
+            }),
+            html.Div([#a4-model_metrics
+                html.Div([#a4-model_core_metrics
+                    html.Div([
+                        dcc.Graph(id="a4-important_features"),
+                    ], style={}),
+                    html.Div([
+                        dcc.Graph(id="a4-important_features"),
+                    ], style={}),
+                ],
+                style={
+                    "border": "1px solid black",
+                    "display": "grid",
+                    "gridTemplateColumns": "50% 50%",
+                }),
+                html.Div([ #a4-model_evals
+                    html.Label("Evaluation Metrics", style={"fontWeight": "bold"}),
+                    html.Div([  # AgGrid container
+                        dag.AgGrid(
+                            id="a4-model_evals",
+                            rowData=[],
+                            columnSize="responsiveSizeToFit",
+                            style={"width": "100%", "height": "100%"},
+                        )
+                    ], style={"flex": "1 1 0"})
+                ],
+                style={
+                    "border": "1px solid black",
+                    "display": "flex", "flexDirection": "column", "flex": "1 1 0"
+                }),
+            ],
+            style={
+                "border" : "1px solid black",
+                "display": "grid",
+                "gridTemplateRows": "85% 15%",
+                "width": "80%",
+                "height": "100%",
+            }),
+
+        ],
+        style={
+            "display": "flex",
+            "width": "100%",
+            "height": "90vh",
+        })
+    ]
+    return layout
+
+@app.callback(
+Output('a4-important_features', 'figure'),
+    Output('a4-model_evals', 'rowData'),
+    Output('a4-model_evals', 'columnDefs'),
+    Input('a4-model_selection', 'value'),
+)
+
+def update_act4(model_name):
+    visualizer.acts["act_4"].update(model_name)
+    row_data, column_defs = get_model_evals()
+    return get_10_important_features(), row_data, column_defs
+
+@app.callback(
+    Output('a4-model_selection', 'data'),
+    Input('a4-model_selection','id'),
+)
+
+def get_models(_):
+    return visualizer.acts["act_4"].get_models()
+
+def get_model_evals():
+    return visualizer.acts["act_4"].get_model_evals()
+
+def get_10_important_features():
+    return visualizer.acts["act_4"].get_10_important_features()
+
 
 if __name__ == '__main__':
     if MODE == "main":
