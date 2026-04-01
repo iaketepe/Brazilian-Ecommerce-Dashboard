@@ -547,32 +547,60 @@ def get_worst_3_sellers():
 def act_4():
     layout = [
         html.Div([ #a4-base
-            html.Div([ #a4-model_selection
-                dmc.Select(
+            html.Div([ #a4-selection
+                html.Div([ #a4-selection-model_card
+                    html.Label("-", id="a4-model_name", style={"width": "100%", "fontSize": "24px", "fontWeight": "bold"}),
+                    html.Label(
+                        "Model Name"
+                    )
+                ],
+                style={
+                    "border": "1px solid black",
+                    "textAlign": "center",
+                    "display": "flex",
+                    "flexDirection": "column",
+                    "justifyContent": "center",
+                    "overflowX" : "auto",
+                    "gap" : "20px",
+                    "height": "30%",
+                }),
+                html.Div([  #a4-selection-options
+                    dmc.Select(
                     id="a4-model_selection",
                     data=[],
                     searchable=True,
                     maxDropdownHeight=400,
                     style={
                     })
+                ],
+                style={
+                }),
+
             ],
             style={
-                "border": "1px solid black",
-                "display": "flex",
-                "flexDirection": "column",
-                "minWidth": "25%",
-                "width": "25%",
-                "padding": "20px",
-                "gap": "20px",
+                    "display" : "flex",
+                    "flexDirection": "column",
+                    "minWidth": "25%",
+                    "width": "25%",
+                    "padding" : "20px",
+                    "gap" : "20px",
             }),
             html.Div([#a4-model_metrics
                 html.Div([#a4-model_core_metrics
                     html.Div([
-                        dcc.Graph(id="a4-important_features"),
-                    ], style={}),
+                        dcc.Graph(
+                            id="a4-actual_predicted",
+                            style={"width": "100%", "height": "100%"},
+                            config={'responsive': True}
+                        ),
+                    ], style={"gridColumn": "1", "gridRow": "1", "height": "100%", "width": "100%", "overflow": "auto"}),
                     html.Div([
-                        dcc.Graph(id="a4-important_features"),
-                    ], style={}),
+                        dcc.Graph(
+                            id="a4-important_features",
+                            style={"width": "100%", "height": "100%"},
+                            config={'responsive': True}
+                        ),
+                    ], style={"gridColumn": "2", "gridRow": "1", "height": "100%", "width": "100%", "overflow": "auto"}),
                 ],
                 style={
                     "border": "1px solid black",
@@ -613,6 +641,8 @@ def act_4():
     return layout
 
 @app.callback(
+Output('a4-model_name', 'children'),
+Output('a4-actual_predicted', 'figure'),
 Output('a4-important_features', 'figure'),
     Output('a4-model_evals', 'rowData'),
     Output('a4-model_evals', 'columnDefs'),
@@ -622,7 +652,7 @@ Output('a4-important_features', 'figure'),
 def update_act4(model_name):
     visualizer.acts["act_4"].update(model_name)
     row_data, column_defs = get_model_evals()
-    return get_10_important_features(), row_data, column_defs
+    return get_model(), get_actual_predicted(), get_10_important_features(), row_data, column_defs
 
 @app.callback(
     Output('a4-model_selection', 'data'),
@@ -632,11 +662,17 @@ def update_act4(model_name):
 def get_models(_):
     return visualizer.acts["act_4"].get_models()
 
+def get_model():
+    return visualizer.acts["act_4"].get_model()
+
 def get_model_evals():
     return visualizer.acts["act_4"].get_model_evals()
 
 def get_10_important_features():
     return visualizer.acts["act_4"].get_10_important_features()
+
+def get_actual_predicted():
+    return visualizer.acts["act_4"].get_actual_predicted()
 
 
 if __name__ == '__main__':

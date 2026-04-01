@@ -292,7 +292,7 @@ def calculate(dfs):
     shap_importance = np.mean(shap_values_array, axis=0)
 
     # For single-output regression
-    shap_abs_importance = np.mean(np.abs(shap_values_array), axis=0)
+    shap_abs_importance = np.abs(np.mean(shap_values_array, axis=0))
 
     importance_df = pd.DataFrame({
         "model_name": "tfkeras_seq_neural_network",
@@ -310,6 +310,6 @@ def calculate(dfs):
             {"model_name": "tfkeras_seq_neural_network", **pred_counts_nn},
         ],
         "evaluation_metrics" : [lr_metrics, nn_metrics],
-        "10_important_features" : top_features + top_features_nn
+        "important_features" : top_features + top_features_nn
     }
 

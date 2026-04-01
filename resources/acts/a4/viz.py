@@ -13,22 +13,35 @@ class Act4:
     def update(self, category=None):
         self.model = category or self.models[0]
 
-        #self.actual_predicted = self.simpledb.get_filtered_table("TEST_ACT4", "10_important_features", "model_name", "actual_values") + self.simpledb.get_filtered_table("TEST_ACT4", "10_important_features", "model_name", self.model)
-        self.important_features = self.simpledb.get_filtered_table("TEST_ACT4", "10_important_features", "model_name", self.model)
+        self.actual_predicted = self.simpledb.get_filtered_table("TEST_ACT4", "actual_predicted", "model_name", "actual_values") + self.simpledb.get_filtered_table("TEST_ACT4", "actual_predicted", "model_name", self.model)
+        self.important_features = self.simpledb.get_filtered_table("TEST_ACT4", "important_features", "model_name", self.model)
         self.model_eval = self.simpledb.get_filtered_table("TEST_ACT4", "evaluation_metrics", "model_name", self.model)
+
+    def get_model(self):
+        return self.model
 
     def get_models(self):
         return self.models
 
-    def actual_predicted(self):
+    def get_actual_predicted(self):
         df = pd.DataFrame(self.actual_predicted)
-        actual_values = df[df['model_name'] == 'actual_values']
-        predicted_values = df[df['model_name'] == self.model]
-        fig = px.line()
+        # Keep only actual vs predicted model
+        # Melt bins into long format
+        plot_df = df.melt(
+            id_vars=['model_name'],
+            value_vars=['1', '2', '3', '4', '5'],  # the bin columns
+            var_name='bin',  # new column for bins
+            value_name='count'  # new column for counts
+        )
+        fig = px.line(plot_df, x='bin', y='count', color='model_name', line_shape='linear', markers=True)
+        fig.update_layout(title="Model Accuracy: Actual Vs Predicted")
         return fig
 
     def get_10_important_features(self):
-        fig = px.bar(self.important_features, x="importance", y="feature", barmode='relative', orientation="v")
+        df = pd.DataFrame(self.important_features.copy())
+        df = df.sort_values(by="abs_importance", ascending=False)
+        fig = px.bar(df, x="importance", y="feature", barmode='relative', orientation="h", title="10 Most Predictive Features For This Model")
+        fig.update_layout(yaxis=dict(autorange="reversed"))
         return fig
 
     def get_model_evals(self):
