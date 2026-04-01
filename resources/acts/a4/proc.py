@@ -278,12 +278,12 @@ def calculate(dfs):
     top_features = feature_importance.head(10).to_dict(orient="records")
 
     # Use a small background dataset for reference
-    X_background = X_train.sample(20, random_state=42).values
+    X_background = X_train.sample(100, random_state=42).values
 
     explainer = shap.GradientExplainer(model, X_background)
 
     # Compute SHAP values on a small test subset
-    X_eval = X_test.sample(20, random_state=42).values
+    X_eval = X_test.sample(100, random_state=42).values
     shap_values = explainer.shap_values(X_eval)
 
     shap_values_array = np.squeeze(shap_values)  # shape: (n_eval_samples, n_features)
