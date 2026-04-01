@@ -122,7 +122,7 @@ For my dashboard, I wanted to make my metrics make sense. So at each stage I ask
 Here are the questions:
 - How are we doing?
 - Why are things as they are?
-- 
+- How well can we predict the future?
 
 
 ### ACT 1
@@ -212,3 +212,43 @@ This metric helps determine whether strong performance is widespread or concentr
 NOTE: When it came to visualizing this metric. Dash had a bit of trouble displaying data at the ends of the range (1, 5). So I had to expand the range to make the entire result visible.
 
 ### ACT 4
+The question for this act was how well can we predict the future? Since this is for an ecommerce platform, it makes sense to see that as, "How aligned are we with customer expectations?" To keep things straightforward, I focused on using machine learning to predict order review scores based on certain features:
+
+Some of the features include:
+
+Order Item Features
+- Photo Quantity
+- Price
+- Product Category
+
+Item Logistical Features
+- Delivery Distance (Through differences in customer and seller locations)
+- Delivery Time (From Order Purchase To Delivery)
+
+To improve model prediction, I designed features that map on to a sort of 'delivery policy'. 
+
+These features focused on:
+- Early Deliveries
+- Late Deliveries
+
+They were designed using an exponential function, quickly scaling to signal more extreme cases. 
+
+I also made different models to assess prediction changes through different algorithms:
+- Linear Regression
+- Keras Sequential Neural Network
+
+#### Model Accuracy: Actual Vs Predicted
+I used a line chart to display compare how well a given model predicted the number of cases for a set of review scores.
+
+
+#### The 10 Most Predictive Features By This Model
+I believed, it was important to understand which features impacted a models decisions. For that reason I created a bar chart that shows the 10 features a model weighted the most. I allowed feature importance to be negative or positive. This shows not only shows how important the feature was the model. It shows how the model interpreted that feature. For example, if a feature had a positive value it means that the higher the value observed the more likely the model would rate the score positively. The opposite is true with the negative.  
+
+#### Evaluation Metrics
+I had each model go through a set of evaluation metric assessments, to understand how well it was performing functionally.
+
+I used the following metrics:
+- MAE (Mean Absolute Error)
+- MSE (Mean Squared Error)
+- RMSE (Root Mean Squared Error)
+- R² (Coefficient of Determination)
