@@ -23,41 +23,74 @@ class SimpleDB:
     def is_connected(self):
         return self._conn is not None and self._cur is not None
 
-    def select_exists(self, schema_name, table_name):
-        query = sql.SQL("""
-                SELECT EXISTS (
-                    SELECT 1
-                    FROM information_schema.tables
-                    WHERE table_schema = {schema}
-                      AND table_name = {table}
-                );
-            """).format(
-            schema=sql.Literal(schema_name),
-            table=sql.Literal(table_name)
-        )
+    def safe_execute(self, query):
+        if self._cur is not None:
+            self._cur.close()
+        self._cur = self._conn.cursor()
         self._cur.execute(query)
+
+    def select_exists(self, schema_name, table_name, column_name=None):
+        if column_name is None:
+            query = sql.SQL("""
+                    SELECT EXISTS (
+                        SELECT 1
+                        FROM information_schema.tables
+                        WHERE table_schema = {schema}
+                          AND table_name = {table}
+                    );
+                """).format(
+                schema=sql.Literal(schema_name),
+                table=sql.Literal(table_name)
+            )
+        else:
+            query = sql.SQL("""
+                    SELECT EXISTS (
+                        SELECT 1
+                        FROM information_schema.columns
+                        WHERE table_schema = {schema}
+                          AND table_name = {table}
+                          AND column_name = {column}
+                    );
+                """).format(
+                schema=sql.Literal(schema_name),
+                table=sql.Literal(table_name),
+                column=sql.Literal(column_name)
+            )
+        self.safe_execute(query)
         result = self._cur.fetchone()
         return result['exists']
 
+
     def get_table(self, schema_name, table_name):
-        if (self.select_exists(schema_name, table_name)):
+        if self.select_exists(schema_name, table_name):
             query = sql.SQL("""
                 SELECT * FROM {schema}.{table}
             """).format(
             schema=sql.Identifier(schema_name),
             table=sql.Identifier(table_name)
             )
-            self._cur.execute(query)
+            self.safe_execute(query)
             table = self._cur.fetchall()
             #print(f"Table: {table}")
             return table
         else:
             print("Cannot find table")
 
-_  = """simpleDB = SimpleDB()
-table = simpleDB.get_table("TEST_ACT1","metrics")
-print(type(table))
-print(type(table[0]))
-print(type(table[0]['name']))
-print(table[0]['name'])"""
+    def get_filtered_table(self, schema_name, table_name, column_name, item_name):
+        if self.select_exists(schema_name, table_name, column_name):
+            query = sql.SQL("""
+                SELECT * FROM {schema}.{table}
+                WHERE {column} = {item}
+            """).format(
+            schema=sql.Identifier(schema_name),
+            table=sql.Identifier(table_name),
+            column=sql.Identifier(column_name),
+            item=sql.Literal(item_name),
+            )
+            self.safe_execute(query)
+            table = self._cur.fetchall()
+            return table
+        else:
+            print("Cannot find table")
+
 

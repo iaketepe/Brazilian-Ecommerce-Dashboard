@@ -1,19 +1,28 @@
 from pipeline.running import storage
 from pipeline.utils import gittool
 from datetime import datetime, timezone
+from dotenv import load_dotenv
+import os
 
+load_dotenv()
 
 class Runner:
     def __init__(self, db):
         self.db = db
+        self.mode = os.getenv("MODE")
+
+    def assign_base(self):
+        if self.mode == "main":
+            return "BED"
+        return "TEST"
 
     def start(self):
         dt = datetime.now(timezone.utc)
         error_message = "N/A"
         try:
             with self.db._conn.transaction():
-                schema_base = "BED"
-                act_names = ['ACT1','ACT2']
+                schema_base = self.assign_base()
+                act_names = ['ACT1','ACT2','ACT3','ACT4']
                 for act_name in act_names:
                     storage.store(self.db, schema_base, act_name)
             status = "SUCCESS"

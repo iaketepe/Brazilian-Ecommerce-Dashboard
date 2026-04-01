@@ -4,7 +4,6 @@ import sys
 
 db = DB()
 
-
 if not(db.is_connected()):
     print("!DB -> Ending Prog...")
     sys.exit(1)

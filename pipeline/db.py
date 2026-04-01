@@ -21,18 +21,33 @@ class DB:
     def is_connected(self):
         return self._conn is not None and self._cur is not None
 
-    def select_exists(self, schema_name, table_name):
-        query = sql.SQL("""
-                SELECT EXISTS (
-                    SELECT 1
-                    FROM information_schema.tables
-                    WHERE table_schema = {schema}
-                      AND table_name = {table}
-                );
-            """).format(
-            schema=sql.Literal(schema_name),
-            table=sql.Literal(table_name)
-        )
+    def select_exists(self, schema_name, table_name, column_name=None):
+        if column_name is None:
+            query = sql.SQL("""
+                    SELECT EXISTS (
+                        SELECT 1
+                        FROM information_schema.tables
+                        WHERE table_schema = {schema}
+                          AND table_name = {table}
+                    );
+                """).format(
+                schema=sql.Literal(schema_name),
+                table=sql.Literal(table_name)
+            )
+        else:
+            query = sql.SQL("""
+                    SELECT EXISTS (
+                        SELECT 1
+                        FROM information_schema.columns
+                        WHERE table_schema = {schema}
+                          AND table_name = {table}
+                          AND column_name = {column}
+                    );
+                """).format(
+                schema=sql.Literal(schema_name),
+                table=sql.Literal(table_name),
+                column=sql.Literal(column_name)
+            )
         self._cur.execute(query)
         return self._cur.fetchone()[0]
     def select_exists_schema(self, schema_name):

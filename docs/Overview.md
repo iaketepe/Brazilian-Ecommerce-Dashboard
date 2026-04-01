@@ -1,6 +1,6 @@
 # Project Overview  
 
-Goal: To create a dashboard, showcasing practical data science skill. 
+Goal: To create an end to end data system, showcasing practical data science/engineering skill. 
 
 
 ## Core Stack
@@ -11,4 +11,6 @@ Goal: To create a dashboard, showcasing practical data science skill.
 ## Other Technologies
 - Pandas
 - Numpy
-- 
+- Kagglehub
+- Psycopg
+- Waitress

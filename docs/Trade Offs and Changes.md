@@ -4,7 +4,7 @@
 ### One Stage vs Two Stage Application
 - When I was planning my dashboard site, I needed to figure out the architecture so I could move forward. I had two ideas:
   - Monolithic application
-  - Services-based application (I seperate the application into an 'app' and a pipeline, deploying both seperately and connecting them)
+  - Services-based application (I separate the application into an 'app' and a pipeline, deploying both separately and connecting them)
     #### Option A: App indirectly connects to the pipeline
       - Pipeline ingests data from Kaggle
       - Pipeline computes analysis (preprocessing, etc)
@@ -18,11 +18,85 @@
 
 Result: I chose designing a service-based application based on option A. After doing some research, I realized that option A was better because it increases the amount of abstraction between layers. This abstraction is, I believe makes option A closer to real world workflows.
 
-
-## Stage Design
+<figure>
+  <img width="1176" height="411" alt="B.E.D. Architecture" src="https://github.com/user-attachments/assets/37305b09-039e-49a9-90d0-72a5872dc7a0" />
+  <figcaption style="text-align: center;">Figure 1: High-level B.E.D. architecture</figcaption>
+</figure>
 
 ### Pipeline Design
+When it came to my pipeline, I had two things to consider, how data was going to be processed and when it would be processed.
 
+#### Pipeline Runner Execution (The How)
+To process my data, I had thought of it three parts:
+- Ingestion: The subprocess of getting the data from the sources
+- Analysis: The subprocess of cleaning, and manipulating the data into actual metrics
+- Storage: The subprocess of storing metrics in the cloud
+
+I ended up designing these parts into modules so that they would integrate into my runner rather than be all on the same conceptual 'level'.
+
+##### Ingestion
+For ingestion, I had to make sure that I grabbed all of the neccesary data to send to my analysis module. So I used kagglehub to source the data, and then I combined the files all into a list of dataframes. This makes it easier for my analysis module to focus on cleaning and processing directly.
+
+##### Processing (Analysis)
+For analysis, I had to make sure that I cleaned the data, obtained metrics from it and organized it into a simple data structure that could be sent to my storage module. Since there was a lot of data, I focused on cleaning on a 'needs to do' basis rather than a full clean. 
+
+In terms of the actual analysis, that can be seen in the 'ACT Analysis' segment below. Other than that, the only thing left I had to cover was organizing the data so it could be sent to storage. I thought of it in 3 segments:
+
+Acts - the data structure that holds a list of acts
+Act - A given set of metrics/kpis
+Metrics - The recently analyzed data needed for the visualization of a given metric
+
+I opted for Acts and Act types to be dictionaries. This is because of the O(1) access and there wasn't much need for index based traversal. The metrics I chose to have as list of records where each record was a dictionary. This was done so creating tables for metric data would be simple since I could rely on index based traversal. In terms of the records being dictionaries, this was also fine because they were lightweight and relied on the same columns so abstracting how I can reference that information would become easier for storage.
+
+Initially, I stored the actual logic for each act's analysis in the same module. However, sifting through that same module became cluttered and time-consuming. To fix this, I changed my framing on the system overall. App/ and Pipeline/ will be more grounded. They should be holding mechanisms that make up their subsystem. Act logic whether on the pipeline or on the app should be something modular. So I created an acts folder in resources and moved the analytics over there.
+
+
+
+##### Storage
+For storage, I had two problems to figure out: how to automate table/schema creation, and where transactional boundaries should actually live in the pipeline.
+
+Starting with transactional boundaries, one of the bigger questions here was whether transactions should happen per act or whether each pipeline run should be treated as a single atomic execution.
+
+On paper, per-act transactions sound better. Each act is its own unit of analysis, so committing after every act would mean that if something failed later, I’d still have partial progress saved. It also fits nicely with ideas like retries and fault isolation.
+
+The problem is that this doesn’t really line up with how the pipeline is actually run.
+
+The pipeline executes sequentially on fixed intervals using GitHub Actions, and in production it’s expected to process all acts on every run. There’s no interactive input, and I intentionally kept per-run configuration minimal so runs stay deterministic. While I can target individual acts in development by modifying the act list, that’s more of a testing convenience than a real production workflow.
+
+Because of that, per-act transaction management ends up adding complexity without much practical upside. If a run fails, it’s cleaner to retry the entire run on the next interval than to deal with partially committed state across acts.
+
+This naturally pushed the design toward per-run transactional consistency. In this model:
+- Schema creation and validation happen once per run
+- Metric tables are created or updated in a predictable way
+- Writes are treated as part of a single logical execution rather than individual act commits
+
+Within that setup, I automated table and schema creation by inferring SQL types from the processed data. This worked well until I hit an issue with my metrics data. 
+There are two types of metrics in my pipeline:
+- Basic Metrics: Name and value (Average Order Review: 4.3)
+- Complex Metrics: A distribution of values (order_status: delivered - 300, cancelled - 500, etc)
+
+While the complex metrics could be stored in separate tables due to their tabular format, basic metrics had more of a problem. The reason for this is for flexibility. Basic Metrics allow new KPIs to be added at any time, even if they don't share the same data type. As a result of that, inferring SQL types directly from metric values wasn’t reliable.
+
+If I wanted to properly automate table/schema design, I had to allow both for flexibility. Therefore, I decided on a rule between analysis and storage. The analysis layer must convert basic metrics to string before sending them to storage. This lets storage keep schemas stable while still allowing new metrics to be introduced without migrations or manual table changes.
+
+##### Interesting Note on Execution
+An interesting note from this is at runtime, there would be a recursive aspect to executing the process.
+
+For the most part the process stays as follows: Ingestion -> Analysis -> Storage.
+
+However it became more like this: Storage -> Analysis -> Ingestion -> Analysis -> Storage
+
+This was due to how importing works. When you import python will run the module you imported before running the rest of the current program. So it would go into storage, then into analysis (on import) than into ingestion (on import) and recursively return back to storage with all the necessary metrics.
+
+##### Handling Acts that rely on The Processing of Previous Acts?
+By storing the processes of my acts in resources/acts, it added a new consideration. How should I deal with acts that rely on the data processing of a previous act? For example, if I had an Act A that took the dataframes passed to it and transformed them in a way that ACT B actually adds onto, what do I do with that? While the idea of just abstracting those processes and passing them into both acts was tempting, I remembered something more foundational. How my pipeline actually worked.
+
+Since I'm went with a per-run transaction philosophy, I had to make sure that my acts could be processed in those types of situations. There may be some slight overhead for the pipeline if no data exists in the database. However, for instances where an act was for some reason deleted, this would have to be handled cleanly.
+
+Therefore, it makes sense to have each act's logic be 'strictly' self-contained. So all the necessary processing must be in that given act.
+
+#### Pipeline Operations (The When)
+To make sure my pipeline would only process data when necessary I thought it was important to decide when to monitor or run. Originally, I thought about this in the form of two separate classes monitor and runner. However, as I continued to map out my design, I realized some problems with having discrete classes for them. The monitor checks that I was doing clashed with the error handling (transaction management, etc) I had already thought of implementing in the storage module. So I ended up not creating a definitive monitor class and adopted a more conservative philosophy when it came to data storage.
 
 ### App Design
 Finally, I've started to design my dashboard as a web app. I had two options:
@@ -40,7 +114,7 @@ So there wasn't much difference between the two. However, as I was developing, I
 
 ### Designing in Plotly Dash
 Something I've realized is the subtle difference between using Plotly Dash vs HTML/CSS. For the most part its similar, you still write with CSS rules and HTML elements with Python as an intermediary. However, since Dash has its own ways of handling web design, I had to take a step back from designing and focus on understanding Dash. Methods I would have quickly applied like page wrapping (for min-width clamps), or patterns for absolute-relative elements wouldn't work as easily as they did.
- 
+
 
 ## ACT Analysis
 For my dashboard, I wanted to make my metrics make sense. So at each stage I asked a question to help improve focus across the acts.
@@ -48,6 +122,7 @@ For my dashboard, I wanted to make my metrics make sense. So at each stage I ask
 Here are the questions:
 - How are we doing?
 - Why are things as they are?
+- How well can we predict the future?
 
 
 ### ACT 1
@@ -112,3 +187,68 @@ It's easy to look at an e-commerce platform as just one thing. Sometimes, though
 
 To analyze average review scores by state, I first merged order review scores with their corresponding orders and linked each order to its seller and the seller’s state. For orders with multiple sellers, I aggregated to select a single seller and state per order. I then calculated the average review score for each seller state, ensuring that all states were included by merging with a reference table and filling missing values with 0. Finally, I combined this with the seller and customer geographic distributions to create a state-level dataset containing seller counts, customer counts, and average review scores, ready for visualization on the dashboard.
 
+### ACT 3
+The question, "Why are things as they are" is much deeper than I thought. In Act 2, I tried to approach this from a external, geographical context. However, I never ended up looking at it from a more internal one. This act is more focused on that. By analyzing data through the lense of  product categories, I can understand the 'Why' on a deeper level.
+
+#### Number of Orders
+To understand demand across the platform, I calculated the number of orders per product category. This was done by grouping the dataset by product_category and counting the number of associated order_id values. This metric serves as a baseline indicator of category performance, highlighting which categories drive the most activity on the platform. It also provides useful context when compared with revenue-based metrics from Act 1, helping differentiate between high-volume and high-value categories.
+
+#### Platform Order Share
+While raw order counts are useful, it's difficult to understand the impact a given category has immediately. To address this, I calculated a proportion for each category. This was done by dividing the number of orders in each category by the total number of orders across the platform. It provides a clearer understanding of category dominance and platform concentration.
+
+#### Best and Worst 3 Sellers
+To evaluate seller performance more accurately, I implemented a Bayesian-adjusted scoring system rather than relying on simple averages. First, I grouped the data by both product_category and seller_id, calculating the number of reviews and the average review score for each seller. I then computed a global average review score across the entire dataset and introduced a category-specific weighting factor to account for differences in review volume.
+
+Using these components, I calculated a Bayesian score that balances each seller’s individual performance with the overall platform average. This approach reduces the impact of low-sample-size bias and produces more stable rankings. Based on this score, I identified the top 3 and worst 3 sellers within each category. This provides insight into both high-performing sellers who drive positive customer experiences and underperforming sellers who may introduce risk to the platform.
+
+#### Distribution of Product Review Scores
+To better understand customer sentiment, I analyzed the distribution of review scores within each product category. For each category, I counted the number of reviews corresponding to each score from 1 to 5. This reveals the full shape of a categories customer feedback. By examining these distributions, it becomes possible to identify whether a category meeting satisfaction expectations.
+
+#### Distribution of Seller Average Product Review Scores
+In addition to analyzing individual reviews, I examined the distribution of average review scores at the seller level within each category. I first calculated the mean review score for each seller, then grouped these averages into discrete bins between 1 to 5. This provides insight into how seller performance is distributed across a platform's category.
+
+This metric helps determine whether strong performance is widespread or concentrated among a small number of sellers. When cross-referenced with the previous distribution, it becomes a powerful tool for observing blindspots in platform market trends. For example, if a category had very low levels of customer satisfaction. However, most sellers provided high levels of satisfaction, then it may allow us to think about questioning our recommendations systems or other policies.
+
+NOTE: When it came to visualizing this metric. Dash had a bit of trouble displaying data at the ends of the range (1, 5). So I had to expand the range to make the entire result visible.
+
+### ACT 4
+The question for this act was how well can we predict the future? Since this is for an ecommerce platform, it makes sense to see that as, "How aligned are we with customer expectations?" To keep things straightforward, I focused on using machine learning to predict order review scores based on certain features:
+
+Some of the features include:
+
+Order Item Features
+- Photo Quantity
+- Price
+- Product Category
+
+Item Logistical Features
+- Delivery Distance (Through differences in customer and seller locations)
+- Delivery Time (From Order Purchase To Delivery)
+
+To improve model prediction, I designed features that map on to a sort of 'delivery policy'. 
+
+These features focused on:
+- Early Deliveries
+- Late Deliveries
+
+They were designed using an exponential function, quickly scaling to signal more extreme cases. 
+
+I also made different models to assess prediction changes through different algorithms:
+- Linear Regression
+- Keras Sequential Neural Network
+
+#### Model Accuracy: Actual Vs Predicted
+I used a line chart to display compare how well a given model predicted the number of cases for a set of review scores.
+
+
+#### The 10 Most Predictive Features By This Model
+I believed, it was important to understand which features impacted a models decisions. For that reason I created a bar chart that shows the 10 features a model weighted the most. I allowed feature importance to be negative or positive. This shows not only shows how important the feature was the model. It shows how the model interpreted that feature. For example, if a feature had a positive value it means that the higher the value observed the more likely the model would rate the score positively. The opposite is true with the negative.  
+
+#### Evaluation Metrics
+I had each model go through a set of evaluation metric assessments, to understand how well it was performing functionally.
+
+I used the following metrics:
+- MAE (Mean Absolute Error)
+- MSE (Mean Squared Error)
+- RMSE (Root Mean Squared Error)
+- R² (Coefficient of Determination)

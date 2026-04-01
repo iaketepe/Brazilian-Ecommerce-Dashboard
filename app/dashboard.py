@@ -1,10 +1,13 @@
 from click import style
 from dash import Dash, html, dcc, Output, Input, State, callback_context
-import plotly as pl
-import plotly.graph_objects as go
-import plotly.express as px
 from app.visualizer import visualizer
 from waitress import serve
+from dotenv import dotenv_values
+import dash_ag_grid as dag
+import dash_mantine_components as dmc
+
+config = dotenv_values(".env")
+MODE = config.get("MODE")
 
 app = Dash(__name__, suppress_callback_exceptions=True)
 
@@ -39,15 +42,19 @@ app.layout = html.Div([
                 dcc.Link("Act 1", href="/act-1"),
                 html.Br(),
                 dcc.Link("Act 2", href="/act-2"),
+                html.Br(),
+                dcc.Link("Act 3", href="/act-3"),
+                html.Br(),
+                dcc.Link("Act 4", href="/act-4"),
             ],
             id="sidebar-elements"),
         ],
         id="sidebar",
         style={
-            "position": "absolute",
+            "position": "fixed",
             "top": 0,
             "left": 0,
-            "bottom": 0,
+            "height" : "100vh",
             "width": "320px",
             "padding": "20px",
             "backgroundColor": "#f8f9fa",
@@ -87,6 +94,7 @@ style={
     #"fontFamily": '"Source Sans", sans-serif'
 })
 
+app.layout = dmc.MantineProvider(children=app.layout)
 
 @app.callback(
     Output("sidebar","style"),
@@ -118,6 +126,10 @@ def display_page(pathname):
         return act_1()
     elif pathname == "/act-2":
         return act_2()
+    elif pathname == "/act-3":
+        return act_3()
+    elif pathname == "/act-4":
+        return act_4()
     else:
         return act_1()
 
@@ -133,8 +145,8 @@ def act_1():
                     ),
                 ],
                     style={
-                        "grid-column": "1",
-                        "grid-row": "1",
+                        "gridColumn": "1",
+                        "gridRow": "1",
                         "height": "100%",
                     }),
 
@@ -147,65 +159,60 @@ def act_1():
                     ),
                 ],
                     style={
-                        "grid-column": "2",
-                        "grid-row": "1",
+                        "gridColumn": "2",
+                        "gridRow": "1",
                         "height": "100%",
                     }),
                 html.Div([
-                    dcc.Interval(id='a1-ratio_pf', interval=10000, n_intervals=0),
                     dcc.Graph(
                         id='a1-ratio_pf',
-                        style={"width": "100%", "height": "100%", "aspect-ratio" : "1 / 1","overflow": "visible"},
+                        style={"width": "100%", "height": "100%", "aspectRatio" : "1 / 1","overflow": "visible"},
                         config={'staticPlot': True}
                     ),
-                ], style={"grid-column": "3", "grid-row": "1", "height": "100%", "width" : "100%"}),
+                ], style={"gridColumn": "3", "gridRow": "1", "height": "100%", "width" : "100%"}),
                 html.Div([
-                    dcc.Interval(id='a1-ratio_sc', interval=10000, n_intervals=0),
                     dcc.Graph(
                         id='a1-ratio_sc',
-                        style={"width": "100%", "height": "100%", "aspect-ratio" : "1 / 1","overflow": "visible"},
+                        style={"width": "100%", "height": "100%", "aspectRatio" : "1 / 1","overflow": "visible"},
                         config={'staticPlot': True}
                     ),
-                ], style={"grid-column": "4", "grid-row": "1", "height": "100%", "width" : "100%"}),
+                ], style={"gridColumn": "4", "gridRow": "1", "height": "100%", "width" : "100%"}),
                 html.Div([
-                    dcc.Interval(id='a1-ratio_cc', interval=10000, n_intervals=0),
                     dcc.Graph(
                         id='a1-ratio_cc',
-                        style={"width": "100%", "height": "100%", "aspect-ratio" : "1 / 1","overflow": "visible"},
+                        style={"width": "100%", "height": "100%", "aspectRatio" : "1 / 1","overflow": "visible"},
                         config={'staticPlot': True}
                     ),
-                ], style={"grid-column": "5", "grid-row": "1", "height": "100%", "width" : "100%"}),
+                ], style={"gridColumn": "5", "gridRow": "1", "height": "100%", "width" : "100%"}),
             ],
             style={
                 "display": "grid",
-                "grid-template-columns": "1.25fr 1fr 1fr 1fr 1fr",
-                "grid-gap": 10,
-                "align-items": "center",
-                "grid-auto-rows": "300px",
-                "overflow-x" : "auto"
+                "gridTemplateColumns": "1.25fr 1fr 1fr 1fr 1fr",
+                "gridGap": 10,
+                "alignItems": "center",
+                "gridAutoRows": "300px",
+                "overflowX" : "auto"
             }),
 
             html.Div([
                 html.Div([
-                    dcc.Interval(id='a1-order_status', interval=10000, n_intervals=0),
                     dcc.Graph(
                         id='a1-order_status',
-                        style={"width": "100%", "height": "100%", "aspect-ratio": "1 / 1", "overflow": "visible"},
+                        style={"width": "100%", "height": "100%", "aspectRatio": "1 / 1", "overflow": "visible"},
                         config={'responsive': True}
                     ),
-                ], style={"grid-column": "1", "grid-row": "1", "height": "100%", "width": "100%"}),
+                ], style={"gridColumn": "1", "gridRow": "1", "height": "100%", "width": "100%"}),
                 html.Div([
-                    dcc.Interval(id='a1-revenue_csum', interval=10000, n_intervals=0),
                     dcc.Graph(
                         id='a1-revenue_csum',
-                        style={"width": "100%", "height": "100%", "aspect-ratio" : "1 / 1","overflow": "visible"},
+                        style={"width": "100%", "height": "100%", "aspectRatio" : "1 / 1","overflow": "visible"},
                         config={'responsive': True}
                     ),
-                ], style={"grid-column": "2", "grid-row": "1", "height": "100%", "width" : "100%"}),
+                ], style={"gridColumn": "2", "gridRow": "1", "height": "100%", "width" : "100%"}),
             ], style={
                 "display": "grid",
-                "grid-template-columns": "1fr 1fr",  # independent two-column layout
-                "grid-gap": "10px",
+                "gridTemplateColumns": "1fr 1fr",  # independent two-column layout
+                "gridGap": "10px",
             })
     ])
 
@@ -213,49 +220,49 @@ def act_1():
 
 @app.callback(
     Output('a1-review_score', 'figure'),
-    Input('a1-review_intervals','n_intervals'),
+    Input('a1-review_score','id'),
 )
 def review_score(_):
     return visualizer.acts["act_1"].review_score()
 
 @app.callback(
     Output('a1-annual_revenue', 'figure'),
-    Input('a1-annual_revenue_intervals','n_intervals')
+    Input('a1-annual_revenue','id')
 )
 def annual_revenue_approximated(_):
   return visualizer.acts["act_1"].annual_revenue_approximated()
 
 @app.callback(
     Output('a1-ratio_pf', 'figure'),
-    Input('a1-ratio_pf','n_intervals')
+    Input('a1-ratio_pf','id')
 )
 def createRatioInstallmentsInFull(_):
     return visualizer.acts["act_1"].createRatioInstallmentsInFull()
 
 @app.callback(
     Output('a1-ratio_sc', 'figure'),
-    Input('a1-ratio_sc', 'n_intervals')
+    Input('a1-ratio_sc', 'id')
 )
 def createRatioSellerCarrier(_):
     return visualizer.acts["act_1"].createRatioSellerCarrier()
 
 @app.callback(
     Output('a1-ratio_cc', 'figure'),
-    Input('a1-ratio_cc', 'n_intervals')
+    Input('a1-ratio_cc', 'id')
 )
 def createRatioCarrierCustomer(_):
     return visualizer.acts["act_1"].createRatioCarrierCustomer()
 
 @app.callback(
     Output('a1-order_status', 'figure'),
-    Input('a1-order_status', 'n_intervals')
+    Input('a1-order_status', 'id')
 )
 def distribution_order_status(_):
     return visualizer.acts["act_1"].distribution_order_status()
 
 @app.callback(
     Output('a1-revenue_csum', 'figure'),
-    Input('a1-revenue_csum', 'n_intervals')
+    Input('a1-revenue_csum', 'id')
 )
 def monthly_annual_revenue_approximated(_):
     return visualizer.acts["act_1"].monthly_annual_revenue_approximated()
@@ -276,7 +283,7 @@ def act_2():
                     "display": "flex",
                     "flexDirection": "row",
                     "gap" : "5px",
-                    "border-radius" : "100%"
+                    "borderRadius" : "100%"
                     #"height": "50%",
                     #"maxHeight": "50%",
                 })
@@ -285,7 +292,7 @@ def act_2():
                 "display": "flex",
                 "justifyContent": "center",
                 "width": "100%",
-                "padding-top" : "20px",
+                "paddingTop" : "20px",
                 #"maxWidth": "15%",
                 #"height": "100%",
             }),
@@ -339,16 +346,346 @@ def render_a2_graph(sellers_clicks, customers_clicks, reviews_clicks):
     return visualizer.acts["act_2"].sellers_distribution()
 
 
+def act_3():
+    layout = [
+        html.Div([ #a3-base
+            html.Div([ #a3-selection
+                html.Div([ #a3-selection-product_category_card
+                    html.Label("-", id="a3-product_category", style={"width": "100%", "fontSize": "24px", "fontWeight": "bold"}),
+                    html.Label(
+                        "Product Category"
+                    )
+                ],
+                style={
+                    "border": "1px solid black",
+                    "textAlign": "center",
+                    "display": "flex",
+                    "flexDirection": "column",
+                    "justifyContent": "center",
+                    "overflowX" : "auto",
+                    "gap" : "20px",
+                    "height": "30%",
+                }),
+                html.Div([  #a3-selection-query-options
+                    html.Div([
+
+                    ],
+                    style={
+                    }),
+                    dmc.Select(
+                    id="a3-product_categories",
+                    data=[],
+                    searchable=True,
+                    maxDropdownHeight=400,
+                    style={
+                    })
+                ],
+                style={
+                    "display": "grid",
+                    "gridTemplateRows": ".1fr 1fr",
+                    # "display" : "flex",
+                    # "height" : "30%"
+                }),
+
+            ],
+            style={
+                    "display" : "flex",
+                    "flexDirection": "column",
+                    "minWidth": "25%",
+                    "width": "25%",
+                    "padding" : "20px",
+                    "gap" : "20px",
+            }),
+            html.Div([ #a3-analytics
+                html.Div([ #a3-analytics-tophalf
+                    html.Div([ #a3-analytics-tophalf-left
+                        html.Div([
+                            dcc.Graph(
+                                id='a3-orders_per_category',
+                                config={'staticPlot': True},
+                                style={"width": "100%", "height": "100%"}
+                            ),
+                        ],style = {"flex": "1 1 0"}),
+                        html.Div([
+                            dcc.Graph(
+                                id='a3-platform_share_per_category',
+                                config={'staticPlot': True},
+                                style={"width": "100%", "height": "100%"}
+                            ),
+                        ], style={"flex": "1 1 0"})
+                    ],
+                        style={
+                            "display": "flex",
+                            "overflowX": "auto",
+                            "width": "40%",
+                            "flex": "1 1 0"
+                        }),
+                    html.Div([ #a3-analytics-tophalf-right
+                        html.Div([  # Top 3 Sellers
+                            html.Label("Top 3 Sellers", style={"fontWeight": "bold"}),
+                            html.Div([  # AgGrid container
+                                dag.AgGrid(
+                                    id="a3-top_sellers",
+                                    rowData=[],
+                                    columnSize="responsiveSizeToFit",
+                                    style={"width": "100%", "height": "100%"}
+                                )
+                            ], style={"flex": "1 1 0"})
+                        ], style={"display": "flex", "flexDirection": "column", "flex": "1 1 0"}),
+                        html.Div([  # Worst 3 Sellers
+                            html.Label("Worst 3 Sellers", style={"fontWeight": "bold"}),
+                            html.Div([  # AgGrid container
+                                dag.AgGrid(
+                                    id="a3-worst_sellers",
+                                    rowData=[],
+                                    columnSize="responsiveSizeToFit",
+                                    style={"width": "100%", "height": "100%"},
+                                )
+                            ], style={"flex": "1 1 0"})
+                        ], style={"display": "flex", "flexDirection": "column", "flex": "1 1 0"}),
+                    ],
+                    style={
+                        "display": "flex",
+                        "flexDirection": "column",
+                        "width": "60%",
+                        "height": "100%",
+                        "overflowX": "auto",
+                    }),
+                ],
+                style={ #a3-analytics-tophalf
+                    "display": "flex",
+                    "width": "100%",
+                    "height": "100%",
+                    "overflow": "auto",
+                }),
+                html.Div([ # a3-analytics-bottomhalf
+                    html.Div([
+                        dcc.Graph(
+                            id="a3-reviews_per_category",
+                            style={"width": "100%", "height": "100%"},
+                            config={'responsive': True}
+                        ),
+                    ], style={"gridColumn": "1", "gridRow": "1", "height": "100%", "width": "100%", "overflow": "auto"}),
+                    html.Div([
+                        dcc.Graph(
+                            id="a3-seller_reviews_per_category",
+                            style={"width": "100%", "height": "100%"},
+                            config={'responsive': True}
+                        ),
+                    ], style={"gridColumn": "2", "gridRow": "1", "height": "100%", "width": "100%", "overflow": "auto"}),
+                ],
+                    style={
+                        "display" : "grid",
+                        "gridTemplateColumns": "1fr 1fr",  # independent two-column layout
+                        "overflow": "auto",
+                    }),
+            ],
+            style={ # a3-analytics
+                "display": "grid",
+                "gridTemplateRows": "40% 60%",
+                "width": "80%",
+                "height": "100%",
+            }),
+        ],
+        style={ #a3-base
+            "display": "flex",
+            "width" : "100%",
+            "height": "90vh",
+            #"divide" : "divi"
+        })
+    ]
+    return layout
+
+@app.callback(
+    Output('a3-product_category', 'children'),
+    Output('a3-orders_per_category', 'figure'),
+    Output('a3-platform_share_per_category', 'figure'),
+    Output('a3-reviews_per_category', 'figure'),
+    Output('a3-seller_reviews_per_category', 'figure'),
+    Output('a3-top_sellers', 'rowData'),
+    Output('a3-top_sellers', 'columnDefs'),
+    Output('a3-worst_sellers', 'rowData'),
+    Output('a3-worst_sellers', 'columnDefs'),
+    Input('a3-product_categories','value'),
+)
+def update_act3(category):
+    visualizer.acts["act_3"].update(category)
+    top_3_row_data, top_3_columns_def = get_top_3_sellers()
+    worst_3_row_data, worst_3_columns_def = get_worst_3_sellers()
+    return get_category(), get_orders_per_category(), get_platform_share_per_category(), get_reviews_per_category(), get_seller_reviews_per_category(), top_3_row_data, top_3_columns_def, worst_3_row_data, worst_3_columns_def
+
+@app.callback(
+    Output('a3-product_categories', 'data'), #Output('a3-product_categories', 'options'),
+    Input('a3-product_categories','id'),
+)
+def get_categories(_):
+    return visualizer.acts["act_3"].get_categories()
+
+def get_category():
+    return visualizer.acts["act_3"].get_category()
+
+def get_orders_per_category():
+    return visualizer.acts["act_3"].get_orders_per_category()
+
+def get_platform_share_per_category():
+    return visualizer.acts["act_3"].get_platform_share_per_category()
+
+def get_reviews_per_category():
+    return visualizer.acts["act_3"].get_reviews_per_category()
+
+def get_seller_reviews_per_category():
+    return visualizer.acts["act_3"].get_seller_reviews_per_category()
+
+def get_top_3_sellers():
+    row_data, column_defs = visualizer.acts["act_3"].get_top_3_sellers()
+    return row_data, column_defs
+
+def get_worst_3_sellers():
+    return visualizer.acts["act_3"].get_worst_3_sellers()
+
+
+def act_4():
+    layout = [
+        html.Div([ #a4-base
+            html.Div([ #a4-selection
+                html.Div([ #a4-selection-model_card
+                    html.Label("-", id="a4-model_name", style={"width": "100%", "fontSize": "24px", "fontWeight": "bold"}),
+                    html.Label(
+                        "Model Name"
+                    )
+                ],
+                style={
+                    "border": "1px solid black",
+                    "textAlign": "center",
+                    "display": "flex",
+                    "flexDirection": "column",
+                    "justifyContent": "center",
+                    "overflowX" : "auto",
+                    "gap" : "20px",
+                    "height": "30%",
+                }),
+                html.Div([  #a4-selection-options
+                    dmc.Select(
+                    id="a4-model_selection",
+                    data=[],
+                    searchable=True,
+                    maxDropdownHeight=400,
+                    style={
+                    })
+                ],
+                style={
+                }),
+
+            ],
+            style={
+                    "display" : "flex",
+                    "flexDirection": "column",
+                    "minWidth": "25%",
+                    "width": "25%",
+                    "padding" : "20px",
+                    "gap" : "20px",
+            }),
+            html.Div([#a4-model_metrics
+                html.Div([#a4-model_core_metrics
+                    html.Div([
+                        dcc.Graph(
+                            id="a4-actual_predicted",
+                            style={"width": "100%", "height": "100%"},
+                            config={'responsive': True}
+                        ),
+                    ], style={"gridColumn": "1", "gridRow": "1", "height": "100%", "width": "100%", "overflow": "auto"}),
+                    html.Div([
+                        dcc.Graph(
+                            id="a4-important_features",
+                            style={"width": "100%", "height": "100%"},
+                            config={'responsive': True}
+                        ),
+                    ], style={"gridColumn": "2", "gridRow": "1", "height": "100%", "width": "100%", "overflow": "auto"}),
+                ],
+                style={
+                    "border": "1px solid black",
+                    "display": "grid",
+                    "gridTemplateColumns": "50% 50%",
+                }),
+                html.Div([ #a4-model_evals
+                    html.Label("Evaluation Metrics", style={"fontWeight": "bold"}),
+                    html.Div([  # AgGrid container
+                        dag.AgGrid(
+                            id="a4-model_evals",
+                            rowData=[],
+                            columnSize="responsiveSizeToFit",
+                            style={"width": "100%", "height": "100%"},
+                        )
+                    ], style={"flex": "1 1 0"})
+                ],
+                style={
+                    "border": "1px solid black",
+                    "display": "flex", "flexDirection": "column", "flex": "1 1 0"
+                }),
+            ],
+            style={
+                "border" : "1px solid black",
+                "display": "grid",
+                "gridTemplateRows": "85% 15%",
+                "width": "80%",
+                "height": "100%",
+            }),
+
+        ],
+        style={
+            "display": "flex",
+            "width": "100%",
+            "height": "90vh",
+        })
+    ]
+    return layout
+
+@app.callback(
+Output('a4-model_name', 'children'),
+Output('a4-actual_predicted', 'figure'),
+Output('a4-important_features', 'figure'),
+    Output('a4-model_evals', 'rowData'),
+    Output('a4-model_evals', 'columnDefs'),
+    Input('a4-model_selection', 'value'),
+)
+
+def update_act4(model_name):
+    visualizer.acts["act_4"].update(model_name)
+    row_data, column_defs = get_model_evals()
+    return get_model(), get_actual_predicted(), get_10_important_features(), row_data, column_defs
+
+@app.callback(
+    Output('a4-model_selection', 'data'),
+    Input('a4-model_selection','id'),
+)
+
+def get_models(_):
+    return visualizer.acts["act_4"].get_models()
+
+def get_model():
+    return visualizer.acts["act_4"].get_model()
+
+def get_model_evals():
+    return visualizer.acts["act_4"].get_model_evals()
+
+def get_10_important_features():
+    return visualizer.acts["act_4"].get_10_important_features()
+
+def get_actual_predicted():
+    return visualizer.acts["act_4"].get_actual_predicted()
+
 
 if __name__ == '__main__':
-    serve(
-        app,
-        host='0.0.0.0',
-        port=8050,
-        threads=8
-    )
-    _ = """app.run(
-        debug=True,
-        host='0.0.0.0',
-        port=8050
-    )"""
+    if MODE == "main":
+       serve(
+            app,
+            host='0.0.0.0',
+            port=8050,
+            threads=8
+        )
+    else:
+        app.run(
+            debug=True,
+            host='0.0.0.0',
+            port=8050
+        )

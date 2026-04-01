@@ -1,8 +1,13 @@
 kagglehub
 pandas
+scikit-learn
+tensorflow
 dash
 plotly
 psycopg
 python-dotenv
 waitress
 geopandas
+dash-ag-grid
+dash-mantine-components
+shap
