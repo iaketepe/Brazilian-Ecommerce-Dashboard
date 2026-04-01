@@ -6,7 +6,7 @@ from sklearn.model_selection import train_test_split
 from sklearn.linear_model import LinearRegression
 from sklearn.metrics import mean_absolute_error, mean_squared_error, r2_score
 from tensorflow import keras
-from tensorflow.keras import layers
+from tensorflow.keras import layers, Input, Model
 
 def initializing_dataset(dfs):
     ### Setting Up
@@ -277,10 +277,17 @@ def calculate(dfs):
 
     top_features = feature_importance.head(10).to_dict(orient="records")
 
-    # Use a small background dataset for reference
+    inputs = Input(shape=(X_train.shape[1],))
+
+    x = inputs
+    for layer in model.layers:
+        x = layer(x)
+
+    functional_model = Model(inputs=inputs, outputs=x)
+
     X_background = X_train.sample(100, random_state=42).values
 
-    explainer = shap.GradientExplainer(model, X_background)
+    explainer = shap.GradientExplainer(functional_model, X_background)
 
     # Compute SHAP values on a small test subset
     X_eval = X_test.sample(100, random_state=42).values
