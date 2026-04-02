@@ -1,7 +1,7 @@
 kagglehub
 pandas
 scikit-learn
-tensorflow
+tensorflow-cpu
 dash
 plotly
 psycopg
