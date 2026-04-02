@@ -4,7 +4,7 @@ scikit-learn
 tensorflow-cpu
 dash
 plotly
-psycopg
+psycopg[binary]
 python-dotenv
 waitress
 geopandas
