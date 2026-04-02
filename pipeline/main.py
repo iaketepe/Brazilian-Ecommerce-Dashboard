@@ -1,12 +1,10 @@
+import subprocess, sys
+subprocess.check_call([sys.executable, "-m", "pip", "install", "-r", "requirements.txt"])
+
 from pipeline import runner
 from pipeline.db import DB
 from prefect import flow, task
-import subprocess
 import sys
-
-@task
-def setup_dependencies(requirements_file):
-    subprocess.check_call([sys.executable, "-m", "pip", "install", "-r", requirements_file])
 
 @task
 def setup_db():
@@ -28,7 +26,6 @@ def execute_runner(db):
 
 @flow
 def main():
-    setup_dependencies("requirements.txt")
     db = setup_db()
     execute_runner(db)
 
