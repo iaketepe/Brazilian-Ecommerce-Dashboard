@@ -1,0 +1,20 @@
+name: bed-pipeline
+
+prefect-version: 3.6.24
+
+build:
+  - prefect.deployments.steps.pip_install:
+      requirements: pipeline/requirements.txt
+
+deployments:
+  - name: test_deploy
+    entrypoint: pipeline/main.py:main
+    work_pool:
+      name: default-work-pool
+      work_queue_name: default
+
+    env:
+      DB_HOST: "{{ prefect.blocks.secret.db-host }}"
+      DB_NAME: "{{ prefect.blocks.secret.db-name }}"
+      DB_USER: "{{ prefect.blocks.secret.db-user }}"
+      DB_PASS: "{{ prefect.blocks.secret.db-pass }}"
