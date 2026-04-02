@@ -15,19 +15,12 @@ class SimpleDB:
                 password=os.getenv("DB_PASS"),
                 row_factory = dict_row
             )
-            self._cur = self._conn.cursor()
         except Exception as e:
             print("Failed to connect to DB: ", e)
             self._conn = None
             self._cur = None
     def is_connected(self):
-        return self._conn is not None and self._cur is not None
-
-    def safe_execute(self, query):
-        if self._cur is not None:
-            self._cur.close()
-        self._cur = self._conn.cursor()
-        self._cur.execute(query)
+        return self._conn is not None
 
     def select_exists(self, schema_name, table_name, column_name=None):
         if column_name is None:
@@ -56,9 +49,10 @@ class SimpleDB:
                 table=sql.Literal(table_name),
                 column=sql.Literal(column_name)
             )
-        self.safe_execute(query)
-        result = self._cur.fetchone()
-        return result['exists']
+        with self._conn.cursor() as cur:
+            cur.execute(query)
+            result = cur.fetchone()
+            return result['exists']
 
 
     def get_table(self, schema_name, table_name):
@@ -69,10 +63,10 @@ class SimpleDB:
             schema=sql.Identifier(schema_name),
             table=sql.Identifier(table_name)
             )
-            self.safe_execute(query)
-            table = self._cur.fetchall()
-            #print(f"Table: {table}")
-            return table
+            with self._conn.cursor() as cur:
+                cur.execute(query)
+                table = cur.fetchall()
+                return table
         else:
             print("Cannot find table")
 
@@ -87,9 +81,10 @@ class SimpleDB:
             column=sql.Identifier(column_name),
             item=sql.Literal(item_name),
             )
-            self.safe_execute(query)
-            table = self._cur.fetchall()
-            return table
+            with self._conn.cursor() as cur:
+                cur.execute(query)
+                table = cur.fetchall()
+                return table
         else:
             print("Cannot find table")
 
