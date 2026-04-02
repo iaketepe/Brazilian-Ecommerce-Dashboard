@@ -1,9 +1,6 @@
-import subprocess, sys
-subprocess.check_call([sys.executable, "-m", "pip", "install", "-r", "requirements.txt"])
-
+from prefect import flow, task
 from pipeline import runner
 from pipeline.db import DB
-from prefect import flow, task
 import sys
 
 @task
