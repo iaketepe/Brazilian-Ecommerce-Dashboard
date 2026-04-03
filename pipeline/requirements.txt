@@ -11,5 +11,5 @@ geopandas
 dash-ag-grid
 dash-mantine-components
 shap
-prefect==3.0.6
+prefect
 uv
