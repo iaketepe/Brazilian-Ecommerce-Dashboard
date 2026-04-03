@@ -1,7 +1,7 @@
 kagglehub
 pandas
 scikit-learn
-tensorflow-cpu
+tensorflow-cpu==2.15.0
 dash
 plotly
 psycopg
