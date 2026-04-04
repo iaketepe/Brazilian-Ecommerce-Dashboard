@@ -30,9 +30,11 @@ jobs:
           filters: |
             pipeline:
               - 'pipeline/**'
+            resources:
+              - 'resources/**'
 
       - name: Run Heavy Check?
-        if: steps.changes.outputs.pipeline == 'true'
+        if: steps.changes.outputs.pipeline == 'true' || steps.changes.outputs.resources == 'true'
         run: |
           echo "Running pipeline checks..."
           python -m pip install --upgrade pip
