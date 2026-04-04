@@ -1,0 +1,40 @@
+name: Pipeline-Security-Guard
+
+on:
+  pull_request:
+    branches:
+      - main
+
+jobs:
+  securing-the-pipeline:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+
+    env: 
+      DB_HOST: ${{ secrets.DB_HOST }}
+      DB_NAME: ${{ secrets.DB_NAME }}
+      DB_PASS: ${{ secrets.DB_PASS }}
+      DB_USER: ${{ secrets.DB_USER }}
+      OMP_NUM_THREADS: 1
+      OPENBLAS_NUM_THREADS: 1
+      MKL_NUM_THREADS: 1
+      NUMEXPR_NUM_THREADS: 1
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Detect Pipeline Changes
+        id: changes
+        uses: dorny/paths-filter@v3
+        with:
+          filters: |
+            pipeline:
+              - 'pipeline/**'
+
+      - name: Run Heavy Check?
+        if: steps.changes.outputs.pipeline == 'true'
+        run: |
+          echo "Running pipeline checks..."
+          python -m pip install --upgrade pip
+          pip install -r pipeline/requirements.txt
+          python -m pipeline.main
