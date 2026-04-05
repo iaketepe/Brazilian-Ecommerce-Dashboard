@@ -8,13 +8,13 @@ def setup_act(act_name):
     dfs = ingestion.ingest()
 
     actsRef = {
-        "ACT1" : a1_proc.calculate(dfs),
-        "ACT2" : a2_proc.calculate(dfs),
-        "ACT3" : a3_proc.calculate(dfs),
-        "ACT4" : a4_proc.calculate(dfs),
+        "ACT1" : a1_proc,
+        "ACT2" : a2_proc,
+        "ACT3" : a3_proc,
+        "ACT4" : a4_proc,
     }
 
-    return actsRef[act_name]
+    return actsRef[act_name].calculate(dfs)
 
 def setup_acts():
     dfs = ingestion.ingest()
