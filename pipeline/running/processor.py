@@ -4,6 +4,18 @@ from resources.acts.a2 import proc as a2_proc
 from resources.acts.a3 import proc as a3_proc
 from resources.acts.a4 import proc as a4_proc
 
+def setup_act(act_name):
+    dfs = ingestion.ingest()
+
+    actsRef = {
+        "ACT1" : a1_proc.calculate(dfs),
+        "ACT2" : a2_proc.calculate(dfs),
+        "ACT3" : a3_proc.calculate(dfs),
+        "ACT4" : a4_proc.calculate(dfs),
+    }
+
+    return actsRef[act_name]
+
 def setup_acts():
     dfs = ingestion.ingest()
 
