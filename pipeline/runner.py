@@ -25,10 +25,10 @@ class Runner:
                 act_names = ['ACT1','ACT2','ACT3','ACT4']
                 for act_name in act_names:
                     storage.store(self.db, schema_base, act_name)
-            status = "SUCCESS"
+                status = "SUCCESS"
         except Exception as e:
             status = "FAILURE"
-            error_message = str(e)
+            error_message = act_name + str(f"{act_name}: {e}")
 
         run_date = dt.date()
         run_time = datetime.now(timezone.utc) - dt
@@ -47,3 +47,6 @@ class Runner:
             self.db.create_schema(metadata_schema_name)
             self.db.create_pipeline_runs_table(metadata_schema_name)
             self.db.write_to_table(metadata_schema_name,"pipeline_runs", pipeline_run)
+
+        if status == 'FAILURE':
+            raise Exception(f"Runner Failed -> {error_message}")
