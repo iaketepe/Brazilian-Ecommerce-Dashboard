@@ -10,7 +10,9 @@ if not(db.is_connected()):
 
 try:
     r = runner.Runner(db)
-    r.start()
+    status = r.start()
+    if status == 'FAILURE':
+        Exception("Pipeline Failure")
 except Exception as e:
     print(e)
     sys.exit(1)
