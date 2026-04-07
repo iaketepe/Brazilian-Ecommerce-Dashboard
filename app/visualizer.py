@@ -1,7 +1,3 @@
-from dash import Dash, html, dcc, Output, Input, State
-import plotly.graph_objects as go
-import plotly.express as px
-import pandas as pd
 from app.simpleDB import SimpleDB
 from resources.acts.a1 import viz as a1_viz
 from resources.acts.a2 import viz as a2_viz
