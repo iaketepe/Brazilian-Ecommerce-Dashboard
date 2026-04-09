@@ -1,20 +1,22 @@
-from click import style
-from dash import Dash, html, dcc, Output, Input, State, callback_context
+from dash import Dash, html, dcc, Output, Input, State, callback_context, ctx, Patch
 from app.visualizer import visualizer
 from waitress import serve
 from dotenv import dotenv_values
 import dash_ag_grid as dag
 import dash_mantine_components as dmc
+from dash_iconify import DashIconify
+from flask_caching import Cache
 
 config = dotenv_values(".env")
 MODE = config.get("MODE")
 
 app = Dash(__name__, suppress_callback_exceptions=True)
-
+cache = Cache(app.server, config={'CACHE_TYPE': 'simple'})
 #"Source Sans", sans-serif background-color: rgb(14, 17, 23);
 
 # Requires Dash 2.17.0 or later
-app.layout = html.Div([
+base = html.Div([
+    dcc.Store(id={'type': 'storage', 'index': 'session'}, storage_type='session'),
     dcc.Location(id='url', refresh=False),
 
     # Sidebar
@@ -24,6 +26,21 @@ app.layout = html.Div([
             "position": "absolute",
             "top": 20,
             "left": 20,
+            "display": "block"
+        }
+    ),
+    dmc.ColorSchemeToggle(
+        id="color-scheme-toggle",
+        lightIcon=DashIconify(icon="radix-icons:sun", width=20),
+        darkIcon=DashIconify(icon="radix-icons:moon", width=20),
+        color="yellow",
+        size="lg",
+        bdrs=100,
+        style={
+            "border" : "1px solid gray",
+            "position": "absolute",
+            "top": 20,
+            "right": 20,
             "display": "block"
         }
     ),
@@ -58,10 +75,11 @@ app.layout = html.Div([
             "width": "320px",
             "padding": "20px",
             "backgroundColor": "#f8f9fa",
+            "transform": "translateX(-100%)",
             "transition": "transform 0.3s",
             "zIndex": 1000,
             "overflow": "hidden",
-            "display": "none"
+            #"display": "none"
         }, # #000000
     ),
 
@@ -73,12 +91,24 @@ app.layout = html.Div([
                     "textAlign": "center",
                 }
             ),
-            html.Div([],
-                id='act-content',
+            dcc.Loading(
+                id="loading",
+                overlay_style={"visibility":"visible", "filter": "blur(20px)"},
+                color="#1f77b4",
+                type="default",
+                children=html.Div([],
+                    id='act-content',
+                    style={
+                        "border": "1px solid black",
+                        "minHeight" : "90vh"
+                        ""
+                    }
+                ),
                 style={
-                    "border": "1px solid black",
+
                 }
-            ),
+
+            )
         ],
         id="page-content",
         style={"padding": "50px",
@@ -94,18 +124,53 @@ style={
     #"fontFamily": '"Source Sans", sans-serif'
 })
 
-app.layout = dmc.MantineProvider(children=app.layout)
+
+app.layout = dmc.MantineProvider(theme={}, children=[dmc.pre_render_color_scheme(), base])
+
+@app.callback(
+    Output("loading", "overlay_style"),
+    Input("color-scheme-toggle", "computedColorScheme")
+)
+def update_overlay_style(theme):
+    if theme == "dark":
+        return {
+            "backgroundColor": "rgba(0,0,0,0.15)",
+            "border" : "none",
+        }
+    else:
+        return {
+            "backgroundColor": "rgba(255,255,255,0.15)",
+            "border": "none",
+        }
 
 @app.callback(
     Output("sidebar","style"),
     Input("sidebar-button", "n_clicks"),
     Input("sidebar-under-button", "n_clicks"),
+    Input("color-scheme-toggle", "computedColorScheme"),
     State("sidebar", "style"),
 )
-def toggle_sidebar(n_clicks, n_clicks2, sidebar_style):
-    if not sidebar_style:
-        sidebar_style = {}
-    sidebar_style = sidebar_style.copy()
+def update_sidebar(n_clicks, n_clicks2, theme, s_style):
+    sidebar_style = s_style or {}
+
+    button_id = ctx.triggered_id
+
+    if button_id == "color-scheme-toggle":
+        return update_sidebar_color(sidebar_style, theme)
+    else:
+        return toggle_sidebar(sidebar_style)
+
+def update_sidebar_color(s_style, theme):
+    sidebar_style = s_style.copy()
+    if theme == "dark":
+        sidebar_style["backgroundColor"] = "#0e1117"
+    else:
+        sidebar_style["backgroundColor"] = "#f8f9fa"
+
+    return sidebar_style
+
+def toggle_sidebar(s_style):
+    sidebar_style = s_style.copy()
 
     sidebar_style["display"] = "block"
 
@@ -123,14 +188,19 @@ def toggle_sidebar(n_clicks, n_clicks2, sidebar_style):
 )
 def display_page(pathname):
     if pathname == "/act-1":
+        visualizer.setup_act("act_1")
         return act_1()
     elif pathname == "/act-2":
+        visualizer.setup_act("act_2")
         return act_2()
     elif pathname == "/act-3":
+        visualizer.setup_act("act_3")
         return act_3()
     elif pathname == "/act-4":
+        visualizer.setup_act("act_4")
         return act_4()
     else:
+        visualizer.setup_act("act_1")
         return act_1()
 
 def act_1():
@@ -154,6 +224,7 @@ def act_1():
                     dcc.Interval(id='a1-review_intervals', interval=10000, n_intervals=0),
                     dcc.Graph(
                         id='a1-review_score',
+                        #figure=visualizer.acts["act_1"].review_score(),
                         style={"width": "100%", "height": "100%"},
                         config={'staticPlot': True}
                     ),
@@ -188,7 +259,6 @@ def act_1():
             style={
                 "display": "grid",
                 "gridTemplateColumns": "1.25fr 1fr 1fr 1fr 1fr",
-                "gridGap": 10,
                 "alignItems": "center",
                 "gridAutoRows": "300px",
                 "overflowX" : "auto"
@@ -212,60 +282,55 @@ def act_1():
             ], style={
                 "display": "grid",
                 "gridTemplateColumns": "1fr 1fr",  # independent two-column layout
-                "gridGap": "10px",
             })
     ])
 
     return layout
 
+
 @app.callback(
     Output('a1-review_score', 'figure'),
-    Input('a1-review_score','id'),
-)
-def review_score(_):
-    return visualizer.acts["act_1"].review_score()
-
-@app.callback(
     Output('a1-annual_revenue', 'figure'),
-    Input('a1-annual_revenue','id')
-)
-def annual_revenue_approximated(_):
-  return visualizer.acts["act_1"].annual_revenue_approximated()
-
-@app.callback(
     Output('a1-ratio_pf', 'figure'),
-    Input('a1-ratio_pf','id')
-)
-def createRatioInstallmentsInFull(_):
-    return visualizer.acts["act_1"].createRatioInstallmentsInFull()
-
-@app.callback(
     Output('a1-ratio_sc', 'figure'),
-    Input('a1-ratio_sc', 'id')
-)
-def createRatioSellerCarrier(_):
-    return visualizer.acts["act_1"].createRatioSellerCarrier()
-
-@app.callback(
     Output('a1-ratio_cc', 'figure'),
-    Input('a1-ratio_cc', 'id')
-)
-def createRatioCarrierCustomer(_):
-    return visualizer.acts["act_1"].createRatioCarrierCustomer()
-
-@app.callback(
     Output('a1-order_status', 'figure'),
-    Input('a1-order_status', 'id')
-)
-def distribution_order_status(_):
-    return visualizer.acts["act_1"].distribution_order_status()
-
-@app.callback(
     Output('a1-revenue_csum', 'figure'),
-    Input('a1-revenue_csum', 'id')
+    Input("color-scheme-toggle", "computedColorScheme"),  # fires on color change
 )
-def monthly_annual_revenue_approximated(_):
-    return visualizer.acts["act_1"].monthly_annual_revenue_approximated()
+def update_act1(theme):
+    fig_theme = visualizer.get_theme(theme)
+
+    review_score_fig = visualizer.acts["act_1"].review_score()
+    review_score_fig.layout.template = fig_theme
+
+    annual_revenue_fig = visualizer.acts["act_1"].annual_revenue_approximated()
+    annual_revenue_fig.layout.template = fig_theme
+
+    ratio_pf_fig = visualizer.acts["act_1"].createRatioInstallmentsInFull()
+    ratio_pf_fig.layout.template = fig_theme
+
+    ratio_sc_fig = visualizer.acts["act_1"].createRatioSellerCarrier()
+    ratio_sc_fig.layout.template = fig_theme
+
+    ratio_cc_fig = visualizer.acts["act_1"].createRatioCarrierCustomer()
+    ratio_cc_fig.layout.template = fig_theme
+
+    order_status_fig = visualizer.acts["act_1"].distribution_order_status()
+    order_status_fig.layout.template = fig_theme
+
+    revenue_csum_fig = visualizer.acts["act_1"].monthly_annual_revenue_approximated()
+    revenue_csum_fig.layout.template = fig_theme
+
+    return (
+        review_score_fig,
+        annual_revenue_fig,
+        ratio_pf_fig,
+        ratio_sc_fig,
+        ratio_cc_fig,
+        order_status_fig,
+        revenue_csum_fig
+    )
 
 
 
@@ -329,9 +394,11 @@ def act_2():
     ],
 )
 def render_a2_graph(sellers_clicks, customers_clicks, reviews_clicks):
-    ctx = callback_context
+    #ctx = callback_context
 
-    button_id = ctx.triggered[0]["prop_id"].split(".")[0]
+    #button_id = ctx.triggered[0]["prop_id"].split(".")[0]
+
+    button_id = ctx.triggered_id
 
     if button_id == "btn-sellers":
         return visualizer.acts["act_2"].sellers_distribution()
