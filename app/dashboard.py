@@ -5,13 +5,11 @@ from dotenv import dotenv_values
 import dash_ag_grid as dag
 import dash_mantine_components as dmc
 from dash_iconify import DashIconify
-from flask_caching import Cache
 
 config = dotenv_values(".env")
 MODE = config.get("MODE")
 
 app = Dash(__name__, suppress_callback_exceptions=True)
-cache = Cache(app.server, config={'CACHE_TYPE': 'simple'})
 #"Source Sans", sans-serif background-color: rgb(14, 17, 23);
 
 # Requires Dash 2.17.0 or later
@@ -101,7 +99,6 @@ base = html.Div([
                     style={
                         "border": "1px solid black",
                         "minHeight" : "90vh"
-                        ""
                     }
                 ),
                 style={
