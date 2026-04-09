@@ -1,4 +1,4 @@
-from dash import Dash, html, dcc, Output, Input, State, callback_context, ctx, Patch
+from dash import Dash, html, dcc, Output, Input, State, ctx, Patch
 from app.visualizer import visualizer
 from waitress import serve
 from dotenv import dotenv_values

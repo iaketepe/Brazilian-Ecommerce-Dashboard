@@ -15,7 +15,7 @@ class Visualizer:
         self.acts = {}
 
     def setup_act(self, act_name):
-        if self.acts.get(act_name) == None:
+        if self.acts.get(act_name) is None:
             if act_name == "act_1":
                 self.acts[act_name] = a1_viz.Act1(self.simpledb)
             elif act_name == "act_2":
