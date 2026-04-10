@@ -24,7 +24,8 @@ base = html.Div([
             "position": "absolute",
             "top": 20,
             "left": 20,
-            "display": "block"
+            "display": "block",
+            "cursor": "pointer",
         }
     ),
     dmc.ColorSchemeToggle(
@@ -49,18 +50,53 @@ base = html.Div([
                         style={
                             "position": "absolute",
                             "right": 20,
+                            "cursor": "pointer",
                         }),
             html.Div([
                 html.H2("Side Bar"),
                 html.Hr(),
                 html.H3("Acts"),
-                dcc.Link("Act 1", href="/act-1"),
-                html.Br(),
-                dcc.Link("Act 2", href="/act-2"),
-                html.Br(),
-                dcc.Link("Act 3", href="/act-3"),
-                html.Br(),
-                dcc.Link("Act 4", href="/act-4"),
+                html.Div(
+                    [
+                        dcc.Link([
+                            html.Button("Act 1",
+                                style={"width": "inherit","textDecoration": "none", "cursor" : "pointer"}
+                            )
+                        ],
+                            href="/act-1",
+                            style={"width": "100%"}
+                        ),
+                        dcc.Link([
+                            html.Button("Act 2",
+                                style={"width": "inherit","textDecoration": "none", "cursor" : "pointer"}
+                            )
+                        ],
+                            href="/act-2",
+                            style={"width": "100%"}
+                        ),
+                        dcc.Link([
+                            html.Button("Act 3",
+                                style={"width": "inherit", "textDecoration": "none", "cursor": "pointer"}
+                            )
+                        ],
+                            href="/act-3",
+                            style={"width": "100%"}
+                        ),
+                        dcc.Link([
+                            html.Button("Act 4",
+                                style={"width": "inherit", "textDecoration": "none", "cursor": "pointer"}
+                            )
+                        ],
+                            href="/act-4",
+                            style={"width": "100%"}
+                        ),
+                    ],
+                    style={
+                        "display" : "flex",
+                        "flexDirection": "column",
+                        "gap" : "5px",
+                    }
+                ),
             ],
             id="sidebar-elements"),
         ],
