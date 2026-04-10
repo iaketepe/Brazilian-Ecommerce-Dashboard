@@ -426,7 +426,7 @@ def act_2():
 
     ],
 )
-def render_a2_graph(sellers_clicks, customers_clicks, reviews_clicks, theme):
+def update_act2(sellers_clicks, customers_clicks, reviews_clicks, theme):
     button_id = ctx.triggered_id
 
     fig_theme = visualizer.get_theme(theme)
@@ -472,11 +472,11 @@ def act_3():
                 }),
                 html.Div([  #a3-selection-query-options
                     dmc.Select(
-                    id="a3-product_categories",
-                    data=[],
-                    searchable=True,
-                    maxDropdownHeight=400,
-                    style={
+                        id="a3-product_categories",
+                        data=[],
+                        searchable=True,
+                        maxDropdownHeight=400,
+                        style={
                     })
                 ],
                 style={
@@ -721,7 +721,6 @@ def act_4():
                     ], style={"gridColumn": "2", "gridRow": "1", "height": "100%", "width": "100%", "overflow": "auto"}),
                 ],
                 style={
-                    "border": "1px solid black",
                     "display": "grid",
                     "gridTemplateColumns": "50% 50%",
                 }),
@@ -732,17 +731,22 @@ def act_4():
                             id="a4-model_evals",
                             rowData=[],
                             columnSize="responsiveSizeToFit",
-                            style={"width": "100%", "height": "100%"},
+                            style={
+                                "width": "100%",
+                                "height": "100%",
+                                "--ag-background-color": "var(--mantine-color-body)",
+                                "--ag-foreground-color": "var(--mantine-color-text)",
+                                "--ag-font-family": "var(--mantine-font-family)",
+                                "--ag-browser-color-scheme": "var(--mantine-color-scheme)",
+                            }
                         )
                     ], style={"flex": "1 1 0"})
                 ],
                 style={
-                    "border": "1px solid black",
                     "display": "flex", "flexDirection": "column", "flex": "1 1 0"
                 }),
             ],
             style={
-                "border" : "1px solid black",
                 "display": "grid",
                 "gridTemplateRows": "85% 15%",
                 "width": "80%",
@@ -765,18 +769,26 @@ Output('a4-important_features', 'figure'),
     Output('a4-model_evals', 'rowData'),
     Output('a4-model_evals', 'columnDefs'),
     Input('a4-model_selection', 'value'),
+    Input("color-scheme-toggle", "computedColorScheme"),
 )
 
-def update_act4(model_name):
+def update_act4(model_name, theme):
     visualizer.acts["act_4"].update(model_name)
+    fig_theme = visualizer.get_theme(theme)
+
+    actual_predicted_fig = visualizer.acts["act_4"].get_actual_predicted()
+    actual_predicted_fig.layout.template = fig_theme
+
+    important_features_fig = visualizer.acts["act_4"].get_10_important_features()
+    important_features_fig.layout.template = fig_theme
+
     row_data, column_defs = get_model_evals()
-    return get_model(), get_actual_predicted(), get_10_important_features(), row_data, column_defs
+    return get_model(), actual_predicted_fig, important_features_fig, row_data, column_defs
 
 @app.callback(
     Output('a4-model_selection', 'data'),
     Input('a4-model_selection','id'),
 )
-
 def get_models(_):
     return visualizer.acts["act_4"].get_models()
 
@@ -785,12 +797,6 @@ def get_model():
 
 def get_model_evals():
     return visualizer.acts["act_4"].get_model_evals()
-
-def get_10_important_features():
-    return visualizer.acts["act_4"].get_10_important_features()
-
-def get_actual_predicted():
-    return visualizer.acts["act_4"].get_actual_predicted()
 
 
 if __name__ == '__main__':
