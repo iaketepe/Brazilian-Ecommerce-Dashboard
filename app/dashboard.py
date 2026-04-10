@@ -14,7 +14,7 @@ app = Dash(__name__, suppress_callback_exceptions=True)
 
 # Requires Dash 2.17.0 or later
 base = html.Div([
-    dcc.Store(id={'type': 'storage', 'index': 'session'}, storage_type='session'),
+    dcc.Store(id="dummy-store"),
     dcc.Location(id='url', refresh=False),
 
     # Sidebar
@@ -127,13 +127,13 @@ base = html.Div([
             ),
             dcc.Loading(
                 id="loading",
-                overlay_style={"visibility":"visible", "filter": "blur(20px)"},
+                overlay_style={"visibility":"hidden", "filter": "blur(20px)"},
                 color="#1f77b4",
                 type="default",
                 children=html.Div([],
                     id='act-content',
                     style={
-                        "border": "1px solid black",
+                        #"border": "1px solid black",
                         "minHeight" : "90vh"
                     }
                 ),
@@ -244,7 +244,7 @@ def act_1():
                     dcc.Graph(
                         id='a1-annual_revenue',
                         style={"width": "100%", "height": "100%"},
-                        config={'staticPlot': True}
+                        config={'staticPlot': True},
                     ),
                 ],
                     style={
@@ -461,7 +461,7 @@ def act_3():
                     )
                 ],
                 style={
-                    "border": "1px solid black",
+                    "border": "1px solid ",
                     "textAlign": "center",
                     "display": "flex",
                     "flexDirection": "column",
@@ -499,8 +499,8 @@ def act_3():
                         html.Div([
                             dcc.Graph(
                                 id='a3-orders_per_category',
-                                config={'staticPlot': True},
-                                style={"width": "100%", "height": "100%"}
+                                config={'staticPlot': True, "showAxisRangeEntryBoxes" : False, "showAxisDragHandles" : False},
+                                style={"width": "100%", "height": "100%"},
                             ),
                         ], style = {"flex": "1 1 0"}),
                         html.Div([
@@ -673,7 +673,7 @@ def act_4():
                     )
                 ],
                 style={
-                    "border": "1px solid black",
+                    "border": "1px solid ",
                     "textAlign": "center",
                     "display": "flex",
                     "flexDirection": "column",

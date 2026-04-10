@@ -45,7 +45,7 @@ class Act1:
             y=self.order_status.values,
             labels={'x': 'Order Status', 'y': 'Count'},
             title='Distribution of Orders by Status',
-            text_auto=True
+            text_auto=True,
         )
         return fig
 
