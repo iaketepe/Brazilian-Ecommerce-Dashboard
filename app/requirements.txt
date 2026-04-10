@@ -1,7 +1,9 @@
 kagglehub
 pandas
 dash
+dash_iconify
 plotly
+plotly.io
 psycopg
 python-dotenv
 waitress
