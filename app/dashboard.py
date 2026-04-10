@@ -1,4 +1,4 @@
-from dash import Dash, html, dcc, Output, Input, State, ctx, Patch, clientside_callback
+from dash import Dash, html, dcc, Output, Input, State, ctx, Patch
 from app.visualizer import visualizer
 from waitress import serve
 from dotenv import dotenv_values
@@ -127,9 +127,10 @@ base = html.Div([
             ),
             dcc.Loading(
                 id="loading",
-                overlay_style={"visibility":"hidden", "filter": "blur(20px)"},
+                overlay_style={"visibility":"hidden", "filter": "blur(20px)", "zIndex" : 10},
                 color="#1f77b4",
                 type="default",
+                delay_show=0,
                 children=html.Div([],
                     id='act-content',
                     style={
@@ -500,7 +501,14 @@ def act_3():
                             dcc.Graph(
                                 id='a3-orders_per_category',
                                 config={'staticPlot': True, "showAxisRangeEntryBoxes" : False, "showAxisDragHandles" : False},
-                                style={"width": "100%", "height": "100%"},
+                                style={
+                                    "width": "100%",
+                                    "height": "100%",
+                                    "--ag-background-color": "var(--mantine-color-body)",
+                                    "--ag-foreground-color": "var(--mantine-color-text)",
+                                    "--ag-font-family": "var(--mantine-font-family)",
+                                    "--ag-browser-color-scheme": "var(--mantine-color-scheme)",
+                                }
                             ),
                         ], style = {"flex": "1 1 0"}),
                         html.Div([

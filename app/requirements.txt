@@ -4,6 +4,7 @@ dash
 dash_iconify
 plotly
 psycopg
+psycopg_pool
 python-dotenv
 waitress
 geopandas
