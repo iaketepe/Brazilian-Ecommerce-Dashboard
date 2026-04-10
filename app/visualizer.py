@@ -4,13 +4,16 @@ from resources.acts.a2 import viz as a2_viz
 from resources.acts.a3 import viz as a3_viz
 from resources.acts.a4 import viz as a4_viz
 import plotly.io as pio
+import dash_mantine_components as dmc
+
+dmc.add_figure_templates()
 
 class Visualizer:
-    def __init__(self): #, theme="light"):
+    def __init__(self):
         self.simpledb = SimpleDB()
         self.themeRefs = {
-            "light" : pio.templates["plotly"],
-            "dark" : pio.templates["plotly_dark"],
+            "light" : pio.templates["mantine_light"],
+            "dark" : pio.templates["mantine_dark"],
         }
         self.acts = {}
 
