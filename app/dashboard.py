@@ -1,4 +1,4 @@
-from dash import Dash, html, dcc, Output, Input, State, ctx, Patch
+from dash import Dash, html, dcc, Output, Input, State, ctx, Patch, clientside_callback
 from app.visualizer import visualizer
 from waitress import serve
 from dotenv import dotenv_values
@@ -366,8 +366,6 @@ def update_act1(theme):
     )
 
 
-
-
 def act_2():
     layout = [
         html.Div([
@@ -473,11 +471,6 @@ def act_3():
                     "height": "30%",
                 }),
                 html.Div([  #a3-selection-query-options
-                    html.Div([
-
-                    ],
-                    style={
-                    }),
                     dmc.Select(
                     id="a3-product_categories",
                     data=[],
@@ -489,8 +482,6 @@ def act_3():
                 style={
                     "display": "grid",
                     "gridTemplateRows": ".1fr 1fr",
-                    # "display" : "flex",
-                    # "height" : "30%"
                 }),
 
             ],
@@ -511,7 +502,7 @@ def act_3():
                                 config={'staticPlot': True},
                                 style={"width": "100%", "height": "100%"}
                             ),
-                        ],style = {"flex": "1 1 0"}),
+                        ], style = {"flex": "1 1 0"}),
                         html.Div([
                             dcc.Graph(
                                 id='a3-platform_share_per_category',
@@ -534,7 +525,14 @@ def act_3():
                                     id="a3-top_sellers",
                                     rowData=[],
                                     columnSize="responsiveSizeToFit",
-                                    style={"width": "100%", "height": "100%"}
+                                    style={
+                                        "width": "100%",
+                                        "height": "100%",
+                                        "--ag-background-color": "var(--mantine-color-body)",
+                                        "--ag-foreground-color": "var(--mantine-color-text)",
+                                        "--ag-font-family": "var(--mantine-font-family)",
+                                        "--ag-browser-color-scheme" : "var(--mantine-color-scheme)",
+                                    }
                                 )
                             ], style={"flex": "1 1 0"})
                         ], style={"display": "flex", "flexDirection": "column", "flex": "1 1 0"}),
@@ -545,7 +543,14 @@ def act_3():
                                     id="a3-worst_sellers",
                                     rowData=[],
                                     columnSize="responsiveSizeToFit",
-                                    style={"width": "100%", "height": "100%"},
+                                    style={
+                                        "width": "100%",
+                                        "height": "100%",
+                                        "--ag-background-color": "var(--mantine-color-body)",
+                                        "--ag-foreground-color": "var(--mantine-color-text)",
+                                        "--ag-font-family": "var(--mantine-font-family)",
+                                        "--ag-browser-color-scheme" : "var(--mantine-color-scheme)",
+                                    }
                                 )
                             ], style={"flex": "1 1 0"})
                         ], style={"display": "flex", "flexDirection": "column", "flex": "1 1 0"}),
@@ -613,12 +618,34 @@ def act_3():
     Output('a3-worst_sellers', 'rowData'),
     Output('a3-worst_sellers', 'columnDefs'),
     Input('a3-product_categories','value'),
+    Input("color-scheme-toggle", "computedColorScheme"),
 )
-def update_act3(category):
+def update_act3(category, theme):
     visualizer.acts["act_3"].update(category)
+    fig_theme = visualizer.get_theme(theme)
+
+    current_category = visualizer.acts["act_3"].get_category()
+
+    orders_fig = visualizer.acts["act_3"].get_orders_per_category()
+    orders_fig.layout.template = fig_theme
+    platform_share_fig = visualizer.acts["act_3"].get_platform_share_per_category()
+    platform_share_fig.layout.template = fig_theme
+
+    reviews_fig = visualizer.acts["act_3"].get_reviews_per_category()
+    reviews_fig.layout.template = fig_theme
+    seller_reviews_fig = visualizer.acts["act_3"].get_seller_reviews_per_category()
+    seller_reviews_fig.layout.template = fig_theme
+
     top_3_row_data, top_3_columns_def = get_top_3_sellers()
     worst_3_row_data, worst_3_columns_def = get_worst_3_sellers()
-    return get_category(), get_orders_per_category(), get_platform_share_per_category(), get_reviews_per_category(), get_seller_reviews_per_category(), top_3_row_data, top_3_columns_def, worst_3_row_data, worst_3_columns_def
+
+    return (
+        current_category,
+        orders_fig, platform_share_fig,
+        reviews_fig, seller_reviews_fig,
+        top_3_row_data, top_3_columns_def,
+        worst_3_row_data, worst_3_columns_def
+    )
 
 @app.callback(
     Output('a3-product_categories', 'data'), #Output('a3-product_categories', 'options'),
@@ -626,21 +653,6 @@ def update_act3(category):
 )
 def get_categories(_):
     return visualizer.acts["act_3"].get_categories()
-
-def get_category():
-    return visualizer.acts["act_3"].get_category()
-
-def get_orders_per_category():
-    return visualizer.acts["act_3"].get_orders_per_category()
-
-def get_platform_share_per_category():
-    return visualizer.acts["act_3"].get_platform_share_per_category()
-
-def get_reviews_per_category():
-    return visualizer.acts["act_3"].get_reviews_per_category()
-
-def get_seller_reviews_per_category():
-    return visualizer.acts["act_3"].get_seller_reviews_per_category()
 
 def get_top_3_sellers():
     row_data, column_defs = visualizer.acts["act_3"].get_top_3_sellers()
