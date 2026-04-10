@@ -293,7 +293,7 @@ def act_1():
     Output('a1-ratio_cc', 'figure'),
     Output('a1-order_status', 'figure'),
     Output('a1-revenue_csum', 'figure'),
-    Input("color-scheme-toggle", "computedColorScheme"),  # fires on color change
+    Input("color-scheme-toggle", "computedColorScheme"),
 )
 def update_act1(theme):
     fig_theme = visualizer.get_theme(theme)
@@ -337,15 +337,15 @@ def act_2():
         html.Div([
             html.Div([
                 html.Div([
-                    html.Button("Sellers", id="btn-sellers", n_clicks=0),
-                    html.Button("Customers", id="btn-customers", n_clicks=0),
-                    html.Button("Reviews", id="btn-reviews", n_clicks=0),
+                    html.Button("Sellers", id="btn-sellers", n_clicks=0, style={"cursor" : "pointer"}),
+                    html.Button("Customers", id="btn-customers", n_clicks=0, style={"cursor" : "pointer"}),
+                    html.Button("Reviews", id="btn-reviews", n_clicks=0, style={"cursor" : "pointer"}),
                 ],
                 style={
                     "display": "flex",
                     "flexDirection": "row",
                     "gap" : "5px",
-                    "borderRadius" : "100%"
+                    "overflowX" : "auto"
                     #"height": "50%",
                     #"maxHeight": "50%",
                 })
@@ -354,7 +354,7 @@ def act_2():
                 "display": "flex",
                 "justifyContent": "center",
                 "width": "100%",
-                "paddingTop" : "20px",
+                "padding" : "20px",
                 #"maxWidth": "15%",
                 #"height": "100%",
             }),
@@ -388,26 +388,32 @@ def act_2():
         Input("btn-sellers", "n_clicks"),
         Input("btn-customers", "n_clicks"),
         Input("btn-reviews", "n_clicks"),
+        Input("color-scheme-toggle", "computedColorScheme"),
+
     ],
 )
-def render_a2_graph(sellers_clicks, customers_clicks, reviews_clicks):
-    #ctx = callback_context
-
-    #button_id = ctx.triggered[0]["prop_id"].split(".")[0]
-
+def render_a2_graph(sellers_clicks, customers_clicks, reviews_clicks, theme):
     button_id = ctx.triggered_id
 
+    fig_theme = visualizer.get_theme(theme)
+
+    fig = visualizer.acts["act_2"].sellers_distribution()
+
     if button_id == "btn-sellers":
-        return visualizer.acts["act_2"].sellers_distribution()
+        fig = visualizer.acts["act_2"].sellers_distribution()
 
     if button_id == "btn-customers":
-        return visualizer.acts["act_2"].customers_distribution()
+        fig = visualizer.acts["act_2"].customers_distribution()
 
     if button_id == "btn-reviews":
-        return visualizer.acts["act_2"].seller_review_score_by_state()
+        fig = visualizer.acts["act_2"].seller_review_score_by_state()
+
+    fig.update_layout(template=fig_theme)
+
+    fig.layout.template = fig_theme
 
     # Fallback
-    return visualizer.acts["act_2"].sellers_distribution()
+    return fig
 
 
 def act_3():
