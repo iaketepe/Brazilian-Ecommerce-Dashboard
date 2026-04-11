@@ -1,5 +1,5 @@
 
-## ACT Analysis
+# ACT Analysis
 For my dashboard, I wanted to make my metrics make sense. So at each stage I asked a question to help improve focus across the acts.
 
 Here are the questions:
